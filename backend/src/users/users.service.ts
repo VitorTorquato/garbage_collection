@@ -25,7 +25,7 @@ export class UsersService {
         select: { id: true, name: true, email: true },
       });
     } catch {
-      throw new HttpException('Falha ao cadastrar usuário', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Failed to create user', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -37,12 +37,12 @@ export class UsersService {
     const user = await this.prisma.user.findFirst({ where: { id } });
 
     if (!user) {
-      throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     if (user.id !== tokenPayload.sub) {
       throw new HttpException(
-        'Sem permissão para atualizar este usuário',
+        'You do not have permission to update this user',
         HttpStatus.FORBIDDEN,
       );
     }
@@ -69,7 +69,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     return user;
@@ -79,18 +79,18 @@ export class UsersService {
     const user = await this.prisma.user.findFirst({ where: { id } });
 
     if (!user) {
-      throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     if (user.id !== tokenPayload.sub) {
       throw new HttpException(
-        'Sem permissão para deletar este usuário',
+        'You do not have permission to delete this user',
         HttpStatus.FORBIDDEN,
       );
     }
 
     await this.prisma.user.delete({ where: { id: user.id } });
 
-    return { message: 'Usuário deletado com sucesso' };
+    return { message: 'User deleted successfully' };
   }
 }

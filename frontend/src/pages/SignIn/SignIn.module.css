@@ -1,0 +1,145 @@
+.page {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px 36px;
+  box-shadow: var(--shadow);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0 0 4px;
+  text-align: left;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text);
+  margin: 0 0 28px;
+  text-align: left;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+.input {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-h);
+  font-size: 15px;
+  font-family: var(--sans);
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: var(--accent);
+}
+
+.passwordWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordWrapper .input {
+  padding-right: 44px;
+}
+
+.eyeBtn {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  transition: color 0.12s;
+  flex-shrink: 0;
+}
+
+.eyeBtn:hover {
+  color: var(--text-h);
+}
+
+.error {
+  font-size: 13px;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.button {
+  margin-top: 4px;
+  padding: 11px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: var(--sans);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.button:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.footer {
+  margin-top: 20px;
+  font-size: 14px;
+  color: var(--text);
+  text-align: center;
+}
+
+.link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link:hover {
+  text-decoration: underline;
+}

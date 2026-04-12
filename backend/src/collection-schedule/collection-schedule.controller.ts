@@ -8,14 +8,12 @@ import {
   HttpStatus,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import { CollectionScheduleService } from './collection-schedule.service';
 import { CreateCollectionScheduleDto } from './dto/create-collection-schedule.dto';
-import { UpdateCollectionScheduleDto } from './dto/update-collection-schedule.dto';
 import { AuthTokeGuard } from '../auth/guard/auth-token.guard';
 import { TokenPayloadParam } from '../auth/param/token-payload-param';
 import { PayloadTokenDto } from '../auth/dto/payload-toke.dto';
@@ -46,15 +44,6 @@ export class CollectionScheduleController {
     @TokenPayloadParam() token: PayloadTokenDto,
   ) {
     return this.service.create(token.sub, dto);
-  }
-
-  @Patch(':scheduleId')
-  update(
-    @Param('scheduleId', ParseIntPipe) scheduleId: number,
-    @Body() dto: UpdateCollectionScheduleDto,
-    @TokenPayloadParam() token: PayloadTokenDto,
-  ) {
-    return this.service.update(scheduleId, token.sub, dto);
   }
 
   @Delete(':scheduleId')

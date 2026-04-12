@@ -1,5 +1,26 @@
 import { MonthlyRule } from '../types/monthly-rule.type';
 
+// ── Fixed Malta national collection schedule ──────────────────────────────────
+
+const MALTA_SCHEDULE: Record<
+  string,
+  | { type: 'weekly'; weekdays: string[] }
+  | { type: 'monthly'; monthlyRules: MonthlyRule[] }
+> = {
+  organic: { type: 'weekly', weekdays: ['monday', 'wednesday', 'friday'] },
+  mixed: { type: 'weekly', weekdays: ['tuesday', 'saturday'] },
+  recyclable: { type: 'weekly', weekdays: ['thursday'] },
+  glass: {
+    type: 'monthly',
+    monthlyRules: [
+      { week: 'first', weekday: 'friday' },
+      { week: 'last', weekday: 'friday' },
+    ],
+  },
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
 const WEEKDAY_INDEX: Record<string, number> = {
   sunday: 0,
   monday: 1,
@@ -9,20 +30,6 @@ const WEEKDAY_INDEX: Record<string, number> = {
   friday: 5,
   saturday: 6,
 };
-
-const WEEK_OCCURRENCE_INDEX: Record<string, number> = {
-  first: 1,
-  second: 2,
-  third: 3,
-  fourth: 4,
-};
-
-export interface ScheduleInput {
-  trashType: string;
-  frequencyType: string;
-  weekdays: string[];
-  monthlyRules: MonthlyRule[] | null;
-}
 
 export interface DashboardDay {
   date: string;
@@ -74,7 +81,6 @@ function computeMonthlyHits(
   const hits: string[] = [];
   const end = addDays(fromDate, days);
 
-  // Determine the range of months to process
   const startYear = fromDate.getFullYear();
   const startMonth = fromDate.getMonth();
   const endYear = end.getFullYear();
@@ -91,23 +97,23 @@ function computeMonthlyHits(
       let candidate: Date;
 
       if (rule.week === 'last') {
-        // Last day of the month
         const lastDay = new Date(year, month + 1, 0);
         const diff = (lastDay.getDay() - targetWeekdayIndex + 7) % 7;
         candidate = addDays(lastDay, -diff);
       } else {
-        const occurrence = WEEK_OCCURRENCE_INDEX[rule.week];
-        // First day of the month
+        const occurrenceMap: Record<string, number> = {
+          first: 1,
+          second: 2,
+          third: 3,
+          fourth: 4,
+        };
+        const occurrence = occurrenceMap[rule.week];
         const firstDay = new Date(year, month, 1);
         const offset = (targetWeekdayIndex - firstDay.getDay() + 7) % 7;
         candidate = addDays(firstDay, offset + (occurrence - 1) * 7);
-        // Ensure the candidate is still in the same month
         if (candidate.getMonth() !== month) {
           month++;
-          if (month > 11) {
-            month = 0;
-            year++;
-          }
+          if (month > 11) { month = 0; year++; }
           continue;
         }
       }
@@ -117,39 +123,36 @@ function computeMonthlyHits(
       }
 
       month++;
-      if (month > 11) {
-        month = 0;
-        year++;
-      }
+      if (month > 11) { month = 0; year++; }
     }
   }
 
   return hits;
 }
 
+// ── Public API ────────────────────────────────────────────────────────────────
+
 export function getUpcomingDays(
-  schedules: ScheduleInput[],
+  trashTypes: string[],
   fromDate: Date,
   days: number,
 ): DashboardDay[] {
   const map = new Map<string, Set<string>>();
 
-  for (const schedule of schedules) {
-    let hits: string[];
+  for (const trashType of trashTypes) {
+    const rule = MALTA_SCHEDULE[trashType];
+    if (!rule) continue;
 
-    if (schedule.frequencyType === 'weekly') {
-      hits = computeWeeklyHits(schedule.weekdays, fromDate, days);
+    let hits: string[];
+    if (rule.type === 'weekly') {
+      hits = computeWeeklyHits(rule.weekdays, fromDate, days);
     } else {
-      hits = computeMonthlyHits(
-        (schedule.monthlyRules as MonthlyRule[]) ?? [],
-        fromDate,
-        days,
-      );
+      hits = computeMonthlyHits(rule.monthlyRules, fromDate, days);
     }
 
     for (const dateStr of hits) {
       if (!map.has(dateStr)) map.set(dateStr, new Set());
-      map.get(dateStr)!.add(schedule.trashType);
+      map.get(dateStr)!.add(trashType);
     }
   }
 

@@ -15,11 +15,6 @@ enum TrashType {
   glass
 }
 
-enum FrequencyType {
-  weekly
-  monthly
-}
-
 model User {
   id                  Int                  @id @default(autoincrement())
   name                String
@@ -36,27 +31,26 @@ model UserAddress {
   id           Int      @id @default(autoincrement())
   userId       Int      @unique
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  street       String
+  street       String?
   neighborhood String?
   city         String
-  state        String
+  state        String?
   country      String
-  lat          Float
-  lng          Float
+  lat          Float    @default(0)
+  lng          Float    @default(0)
   updatedAt    DateTime @updatedAt
   createdAt    DateTime @default(now())
 }
 
 model CollectionSchedule {
-  id            Int           @id @default(autoincrement())
-  userId        Int
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  trashType     TrashType
-  frequencyType FrequencyType
-  weekdays      String[]      @default([])
-  monthlyRules  Json?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trashType TrashType
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([userId, trashType])
 }
 
 model AlertConfig {

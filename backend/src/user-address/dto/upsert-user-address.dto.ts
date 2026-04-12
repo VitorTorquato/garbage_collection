@@ -9,8 +9,8 @@ import {
 
 export class UpsertUserAddressDto {
   @IsString()
-  @IsNotEmpty()
-  street: string;
+  @IsOptional()
+  street?: string;
 
   @IsString()
   @IsOptional()
@@ -21,8 +21,8 @@ export class UpsertUserAddressDto {
   city: string;
 
   @IsString()
-  @IsNotEmpty()
-  state: string;
+  @IsOptional()
+  state?: string;
 
   @IsString()
   @IsNotEmpty()
@@ -30,9 +30,11 @@ export class UpsertUserAddressDto {
 
   @IsNumber()
   @IsLatitude()
-  lat: number;
+  @IsOptional()
+  lat?: number;
 
   @IsNumber()
   @IsLongitude()
-  lng: number;
+  @IsOptional()
+  lng?: number;
 }

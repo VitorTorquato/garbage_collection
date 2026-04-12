@@ -26,7 +26,7 @@ export class AuthTokeGuard implements CanActivate {
     const token = this.extractTokenHeader(request);
 
     if (!token) {
-      throw new UnauthorizedException('Token de autenticação não fornecido');
+      throw new UnauthorizedException('Authentication token not provided');
     }
 
     try {
@@ -42,10 +42,10 @@ export class AuthTokeGuard implements CanActivate {
       });
 
       if (!user?.active) {
-        throw new UnauthorizedException('Usuário inativo');
+        throw new UnauthorizedException('User account is inactive');
       }
     } catch {
-      throw new UnauthorizedException('Acesso não autorizado');
+      throw new UnauthorizedException('Unauthorized');
     }
 
     return true;

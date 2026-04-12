@@ -22,12 +22,12 @@ export class AuthService {
     });
 
     if (!user || !user.active) {
-      throw new UnauthorizedException('Credenciais inválidas');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const isValid = await this.hashing.compare(dto.password, user.passwordHash);
     if (!isValid) {
-      throw new UnauthorizedException('Credenciais inválidas');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const accessToken = await this.jwtService.signAsync(
