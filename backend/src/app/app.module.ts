@@ -5,9 +5,11 @@ import { ValidationPipe } from '@nestjs/common';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { PrismaModule } from '../prisma/prisma.module';
-import { CollectionModule } from '../collection/collection.module';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/user.module';
+import { UserAddressModule } from '../user-address/user-address.module';
+import { CollectionScheduleModule } from '../collection-schedule/collection-schedule.module';
+import { AlertConfigModule } from '../alert-config/alert-config.module';
 
 @Module({
   imports: [
@@ -15,12 +17,17 @@ import { UsersModule } from '../users/user.module';
     PrismaModule,
     AuthModule,
     UsersModule,
-    CollectionModule,
+    UserAddressModule,
+    CollectionScheduleModule,
+    AlertConfigModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
-    { provide: APP_PIPE, useValue: new ValidationPipe({ whitelist: true }) },
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({ whitelist: true, transform: true }),
+    },
   ],
 })
 export class AppModule {}

@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider     = "prisma-client"
   output       = "../generated/prisma"
@@ -13,44 +8,64 @@ datasource db {
   provider = "postgresql"
 }
 
-model City {
-  id        String     @id @default(cuid())
-  name      String
-  state     String
-  country   String
-  schedules Schedule[]
-  createdAt DateTime   @default(now())
-
-  @@unique([name, state, country])
+enum TrashType {
+  organic
+  mixed
+  recyclable
+  glass
 }
 
-model Schedule {
-  id           String          @id @default(cuid())
-  cityId       String
-  city         City            @relation(fields: [cityId], references: [id])
-  neighborhood String?
-  sourceUrl    String
-  confidence   String
-  days         CollectionDay[]
-  expiresAt    DateTime
-  createdAt    DateTime        @default(now())
-}
-
-model CollectionDay {
-  id         String   @id @default(cuid())
-  scheduleId String
-  schedule   Schedule @relation(fields: [scheduleId], references: [id])
-  type       String
-  weekdays   String[]
-  startTime  String?
-  notes      String?
+enum FrequencyType {
+  weekly
+  monthly
 }
 
 model User {
+  id                  Int                  @id @default(autoincrement())
+  name                String
+  email               String               @unique
+  passwordHash        String
+  active              Boolean              @default(true)
+  createdAt           DateTime             @default(now())
+  address             UserAddress?
+  collectionSchedules CollectionSchedule[]
+  alertConfig         AlertConfig?
+}
+
+model UserAddress {
   id           Int      @id @default(autoincrement())
-  name         String
-  email        String   @unique
-  passwordHash String
-  active       Boolean  @default(true)
+  userId       Int      @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  street       String
+  neighborhood String?
+  city         String
+  state        String
+  country      String
+  lat          Float
+  lng          Float
+  updatedAt    DateTime @updatedAt
   createdAt    DateTime @default(now())
+}
+
+model CollectionSchedule {
+  id            Int           @id @default(autoincrement())
+  userId        Int
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trashType     TrashType
+  frequencyType FrequencyType
+  weekdays      String[]      @default([])
+  monthlyRules  Json?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model AlertConfig {
+  id                   Int      @id @default(autoincrement())
+  userId               Int      @unique
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enabled              Boolean  @default(true)
+  daysBeforeCollection Int      @default(0)
+  alertTime            String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 }
