@@ -1,0 +1,1 @@
+export const REQUETS_TOKEN_PAYLOAD_NAME = 'token_payload';
