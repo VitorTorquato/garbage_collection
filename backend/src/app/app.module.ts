@@ -9,7 +9,7 @@ import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/user.module';
 import { UserAddressModule } from '../user-address/user-address.module';
 import { CollectionScheduleModule } from '../collection-schedule/collection-schedule.module';
-import { AlertConfigModule } from '../alert-config/alert-config.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { AlertConfigModule } from '../alert-config/alert-config.module';
     UsersModule,
     UserAddressModule,
     CollectionScheduleModule,
-    AlertConfigModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [

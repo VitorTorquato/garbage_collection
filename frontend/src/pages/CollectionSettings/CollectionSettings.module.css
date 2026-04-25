@@ -456,3 +456,46 @@
   display: block;
   border-radius: 8px;
 }
+
+/* ── Day picker ───────────────────────────── */
+
+.daysGrid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dayBtn {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--sans);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.dayBtn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.dayBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.dayBtnActive {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.dayBtnActive:hover:not(:disabled) {
+  opacity: 0.88;
+  color: #fff;
+}

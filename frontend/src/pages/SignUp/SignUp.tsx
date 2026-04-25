@@ -24,6 +24,7 @@ export function SignUp() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -34,7 +35,7 @@ export function SignUp() {
     setLoading(true)
 
     try {
-      await api.signUp(name, email, password)
+      await api.signUp(name, email, password, phoneNumber || undefined)
       navigate('/signin')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Algo deu errado')
@@ -77,6 +78,21 @@ export function SignUp() {
               placeholder="voce@exemplo.com"
               required
               autoComplete="email"
+            />
+          </div>
+
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="phone">
+              WhatsApp <span className={styles.optional}>(opcional)</span>
+            </label>
+            <input
+              id="phone"
+              className={styles.input}
+              type="tel"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              placeholder="+356 9999 9999"
+              autoComplete="tel"
             />
           </div>
 

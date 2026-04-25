@@ -49,8 +49,6 @@ export interface UpsertAddressDto {
   street?: string
   neighborhood?: string
   city: string
-  state?: string
-  country: string
 }
 
 export interface CollectionSchedule {
@@ -62,17 +60,15 @@ export interface CreateScheduleDto {
   trashType: string
 }
 
-export interface AlertConfig {
+export interface NotificationPreference {
   id: number
   enabled: boolean
-  daysBeforeCollection: number
-  alertTime: string
+  notificationTime: string
 }
 
-export interface UpsertAlertDto {
+export interface UpsertNotificationPrefsDto {
   enabled: boolean
-  daysBeforeCollection: number
-  alertTime: string
+  notificationTime: string
 }
 
 // ── API ──────────────────────────────────────────────────────────────────────
@@ -86,10 +82,10 @@ export const api = {
     })
   },
 
-  signUp(name: string, email: string, password: string) {
+  signUp(name: string, email: string, password: string, phoneNumber?: string) {
     return request<{ id: number }>('/users', {
       method: 'POST',
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name, email, password, ...(phoneNumber ? { phoneNumber } : {}) }),
     })
   },
 
@@ -140,13 +136,15 @@ export const api = {
     )
   },
 
-  // Alert config
-  getAlertConfig(token: string) {
-    return request<AlertConfig>('/alert-config', { headers: auth(token) })
+  // Notification preferences
+  getNotificationPrefs(token: string) {
+    return request<NotificationPreference>('/notifications/preferences', {
+      headers: auth(token),
+    })
   },
 
-  upsertAlertConfig(dto: UpsertAlertDto, token: string) {
-    return request<AlertConfig>('/alert-config', {
+  upsertNotificationPrefs(dto: UpsertNotificationPrefsDto, token: string) {
+    return request<NotificationPreference>('/notifications/preferences', {
       method: 'PUT',
       headers: auth(token),
       body: JSON.stringify(dto),

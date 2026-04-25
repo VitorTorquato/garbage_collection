@@ -27,8 +27,8 @@ export class UserAddressService {
     this.enforceOwnership(userId, requesterId);
     return this.prisma.userAddress.upsert({
       where: { userId },
-      create: { userId, ...dto },
-      update: { ...dto },
+      create: { userId, country: 'Malta', ...dto },
+      update: { country: 'Malta', ...dto },
     });
   }
 

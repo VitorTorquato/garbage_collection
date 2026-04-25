@@ -16,15 +16,16 @@ enum TrashType {
 }
 
 model User {
-  id                  Int                  @id @default(autoincrement())
-  name                String
-  email               String               @unique
-  passwordHash        String
-  active              Boolean              @default(true)
-  createdAt           DateTime             @default(now())
-  address             UserAddress?
-  collectionSchedules CollectionSchedule[]
-  alertConfig         AlertConfig?
+  id                     Int                     @id @default(autoincrement())
+  name                   String
+  email                  String                  @unique
+  passwordHash           String
+  phoneNumber            String?
+  active                 Boolean                 @default(true)
+  createdAt              DateTime                @default(now())
+  address                UserAddress?
+  collectionSchedules    CollectionSchedule[]
+  notificationPreference NotificationPreference?
 }
 
 model UserAddress {
@@ -34,8 +35,7 @@ model UserAddress {
   street       String?
   neighborhood String?
   city         String
-  state        String?
-  country      String
+  country      String  @default("Malta")
   lat          Float    @default(0)
   lng          Float    @default(0)
   updatedAt    DateTime @updatedAt
@@ -53,13 +53,12 @@ model CollectionSchedule {
   @@unique([userId, trashType])
 }
 
-model AlertConfig {
-  id                   Int      @id @default(autoincrement())
-  userId               Int      @unique
-  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  enabled              Boolean  @default(true)
-  daysBeforeCollection Int      @default(0)
-  alertTime            String
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+model NotificationPreference {
+  id               Int      @id @default(autoincrement())
+  userId           Int      @unique
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enabled          Boolean  @default(false)
+  notificationTime String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }

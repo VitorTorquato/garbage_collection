@@ -20,14 +20,6 @@ export class UpsertUserAddressDto {
   @IsNotEmpty()
   city: string;
 
-  @IsString()
-  @IsOptional()
-  state?: string;
-
-  @IsString()
-  @IsNotEmpty()
-  country: string;
-
   @IsNumber()
   @IsLatitude()
   @IsOptional()

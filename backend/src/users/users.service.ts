@@ -21,8 +21,9 @@ export class UsersService {
           name: createUserDto.name,
           email: createUserDto.email,
           passwordHash,
+          phoneNumber: createUserDto.phoneNumber,
         },
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, email: true, phoneNumber: true },
       });
     } catch {
       throw new HttpException('Failed to create user', HttpStatus.BAD_REQUEST);
