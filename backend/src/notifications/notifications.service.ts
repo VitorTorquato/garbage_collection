@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpsertNotificationPrefsDto } from './dto/upsert-notification-prefs.dto';
 import { getUpcomingDays } from '../collection-schedule/utils/upcoming-dates.util';
@@ -29,19 +29,31 @@ export class NotificationsService {
   }
 
   async getPreferences(userId: number) {
-    const prefs = await this.prisma.notificationPreference.findUnique({
-      where: { userId },
-    });
-    if (!prefs) throw new NotFoundException('Notification preferences not found');
-    return prefs;
+    const [prefs, user] = await Promise.all([
+      this.prisma.notificationPreference.findUnique({ where: { userId } }),
+      this.prisma.user.findUnique({ where: { id: userId }, select: { phoneNumber: true } }),
+    ]);
+    return {
+      ...(prefs ?? { enabled: false, notificationTime: '08:00' }),
+      phoneNumber: user?.phoneNumber ?? null,
+    };
   }
 
-  upsertPreferences(userId: number, dto: UpsertNotificationPrefsDto) {
-    return this.prisma.notificationPreference.upsert({
-      where: { userId },
-      create: { userId, ...dto },
-      update: { ...dto },
-    });
+  async upsertPreferences(userId: number, dto: UpsertNotificationPrefsDto) {
+    const { phoneNumber, ...prefsData } = dto;
+
+    const [prefs] = await this.prisma.$transaction([
+      this.prisma.notificationPreference.upsert({
+        where: { userId },
+        create: { userId, ...prefsData },
+        update: { ...prefsData },
+      }),
+      ...(phoneNumber !== undefined
+        ? [this.prisma.user.update({ where: { id: userId }, data: { phoneNumber } })]
+        : []),
+    ]);
+
+    return { ...prefs, phoneNumber: phoneNumber ?? null };
   }
 
   async sendWhatsApp(phoneNumber: string, message: string) {

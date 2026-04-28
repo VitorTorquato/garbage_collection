@@ -23,8 +23,13 @@ const TRASH_INFO: Record<TrashType, { label: string; schedule: string; color: st
 
 const addressSchema = z.object({
   street: z.string().optional(),
-  neighborhood: z.string().optional(),
   city: z.string().min(1, 'Cidade é obrigatória'),
+})
+
+const notificationSchema = z.object({
+  enabled: z.boolean(),
+  notificationTime: z.string().regex(/^\d{2}:\d{2}$/, 'Horário inválido'),
+  phoneNumber: z.string().regex(/^\+?[1-9]\d{7,14}$/, 'Telefone inválido (ex: +35699999999)').optional().or(z.literal('')),
 })
 
 // ── ScheduleDialog ────────────────────────────────────────────────────────────
@@ -63,53 +68,15 @@ function ScheduleDialog({ onClose }: { onClose: () => void }) {
 
 // ── AddressSection ────────────────────────────────────────────────────────────
 
-function AddressSection() {
-  const { token } = useAuth()
-  const [street, setStreet] = useState('')
-  const [neighborhood, setNeighborhood] = useState('')
-  const [city, setCity] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [success, setSuccess] = useState('')
+interface AddressSectionProps {
+  street: string
+  city: string
+  errors: Record<string, string>
+  onStreetChange: (v: string) => void
+  onCityChange: (v: string) => void
+}
 
-  useEffect(() => {
-    if (!token) return
-    api.getAddress(token)
-      .then((a: UserAddress) => {
-        setStreet(a.street ?? '')
-        setNeighborhood(a.neighborhood ?? '')
-        setCity(a.city)
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [token])
-
-  async function handleSave() {
-    setErrors({}); setSuccess('')
-    const result = addressSchema.safeParse({ street, neighborhood, city })
-    if (!result.success) {
-      const flat = result.error.flatten().fieldErrors
-      setErrors(Object.fromEntries(Object.entries(flat).map(([k, v]) => [k, v?.[0] ?? ''])))
-      return
-    }
-    if (!token) return
-    setSaving(true)
-    try {
-      const dto = {
-        street: result.data.street || undefined,
-        neighborhood: result.data.neighborhood || undefined,
-        city: result.data.city,
-      }
-      await api.upsertAddress(dto, token)
-      setSuccess('Endereço salvo!')
-    } catch (e) {
-      setErrors({ _: e instanceof Error ? e.message : 'Falha ao salvar endereço' })
-    } finally {
-      setSaving(false)
-    }
-  }
-
+function AddressSection({ street, city, errors, onStreetChange, onCityChange }: AddressSectionProps) {
   return (
     <div className={styles.card}>
       <div className={styles.cardHeader}>
@@ -119,34 +86,23 @@ function AddressSection() {
         </div>
       </div>
       <div className={styles.cardBody}>
-        {loading ? (
-          <div className="loadingCenter"><div className="spinner" /></div>
-        ) : (
-          <>
-            {errors._ && <p className={styles.error}>{errors._}</p>}
-            {success && <p className={styles.success}>{success}</p>}
+        {errors._ && <p className={styles.error}>{errors._}</p>}
 
-            <div className={styles.field}>
-              <label className={styles.label}>Rua</label>
-              <input className={styles.textInput} value={street} onChange={e => setStreet(e.target.value)} placeholder="Rua da República, 12" />
-            </div>
+        <div className={styles.field}>
+          <label className={styles.label}>Rua</label>
+          <input className={styles.textInput} value={street} onChange={e => onStreetChange(e.target.value)} placeholder="Triq Naxxar, 12" />
+        </div>
 
-            <div className={styles.field}>
-              <label className={styles.label}>Bairro</label>
-              <input className={styles.textInput} value={neighborhood} onChange={e => setNeighborhood(e.target.value)} placeholder="Valletta" />
-            </div>
-
-            <div className={styles.field}>
-              <label className={styles.label}>Cidade *</label>
-              <input className={`${styles.textInput} ${errors.city ? styles.inputError : ''}`} value={city} onChange={e => setCity(e.target.value)} placeholder="Birkirkara" />
-              {errors.city && <span className={styles.fieldError}>{errors.city}</span>}
-            </div>
-
-            <button className={styles.primaryBtn} onClick={handleSave} disabled={saving}>
-              {saving ? 'Salvando…' : 'Salvar endereço'}
-            </button>
-          </>
-        )}
+        <div className={styles.field}>
+          <label className={styles.label}>Cidade *</label>
+          <input
+            className={`${styles.textInput} ${errors.city ? styles.inputError : ''}`}
+            value={city}
+            onChange={e => onCityChange(e.target.value)}
+            placeholder="Naxxar"
+          />
+          {errors.city && <span className={styles.fieldError}>{errors.city}</span>}
+        </div>
       </div>
     </div>
   )
@@ -154,69 +110,32 @@ function AddressSection() {
 
 // ── SchedulesSection ──────────────────────────────────────────────────────────
 
-function SchedulesSection() {
-  const { token } = useAuth()
-  // Map trashType → scheduleId (null = not subscribed)
-  const [subscribed, setSubscribed] = useState<Record<string, number | null>>({
-    organic: null, mixed: null, recyclable: null, glass: null,
-  })
-  const [loading, setLoading] = useState(true)
-  const [toggling, setToggling] = useState<string | null>(null)
+interface SchedulesSectionProps {
+  selected: Set<TrashType>
+  onToggle: (type: TrashType) => void
+}
+
+function SchedulesSection({ selected, onToggle }: SchedulesSectionProps) {
   const [showDialog, setShowDialog] = useState(false)
-
-  useEffect(() => {
-    if (!token) return
-    api.getSchedules(token)
-      .then(list => {
-        const map: Record<string, number | null> = {
-          organic: null, mixed: null, recyclable: null, glass: null,
-        }
-        list.forEach(s => { map[s.trashType] = s.id })
-        setSubscribed(map)
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [token])
-
-  async function handleToggle(type: TrashType) {
-    if (!token || toggling) return
-    setToggling(type)
-    try {
-      const currentId = subscribed[type]
-      if (currentId !== null) {
-        await api.deleteSchedule(currentId, token)
-        setSubscribed(prev => ({ ...prev, [type]: null }))
-      } else {
-        const created = await api.createSchedule({ trashType: type }, token)
-        setSubscribed(prev => ({ ...prev, [type]: created.id }))
-      }
-    } catch {} finally {
-      setToggling(null)
-    }
-  }
 
   return (
     <>
-    {showDialog && <ScheduleDialog onClose={() => setShowDialog(false)} />}
-    <div className={styles.card}>
-      <div className={styles.cardHeader}>
-        <div>
-          <p className={styles.cardTitle}>Agendas de coleta</p>
-          <p className={styles.cardSubtitle}>Selecione os tipos de lixo coletados no seu endereço</p>
+      {showDialog && <ScheduleDialog onClose={() => setShowDialog(false)} />}
+      <div className={styles.card}>
+        <div className={styles.cardHeader}>
+          <div>
+            <p className={styles.cardTitle}>Agendas de coleta</p>
+            <p className={styles.cardSubtitle}>Selecione os tipos de lixo coletados no seu endereço</p>
+          </div>
+          <button className={styles.ghostBtn} onClick={() => setShowDialog(true)}>
+            Ver calendário
+          </button>
         </div>
-        <button className={styles.ghostBtn} onClick={() => setShowDialog(true)}>
-          Ver calendário
-        </button>
-      </div>
-      <div className={styles.cardBody}>
-        {loading ? (
-          <div className="loadingCenter"><div className="spinner" /></div>
-        ) : (
+        <div className={styles.cardBody}>
           <div className={styles.trashTypeList}>
             {TRASH_TYPES.map(type => {
               const info = TRASH_INFO[type]
-              const active = subscribed[type] !== null
-              const isToggling = toggling === type
+              const active = selected.has(type)
               return (
                 <div key={type} className={`${styles.trashTypeRow} ${active ? styles.trashTypeRowActive : ''}`}>
                   <div className={styles.trashTypeDot} style={{ background: info.color }} />
@@ -226,68 +145,33 @@ function SchedulesSection() {
                   </div>
                   <button
                     className={active ? styles.removeBtn : styles.addBtn}
-                    onClick={() => handleToggle(type)}
-                    disabled={isToggling}
+                    onClick={() => onToggle(type)}
                   >
-                    {isToggling ? '…' : active ? 'Remover' : 'Adicionar'}
+                    {active ? 'Remover' : 'Adicionar'}
                   </button>
                 </div>
               )
             })}
           </div>
-        )}
+        </div>
       </div>
-    </div>
     </>
   )
 }
 
 // ── NotificationsSection ──────────────────────────────────────────────────────
 
-const notificationSchema = z.object({
-  enabled: z.boolean(),
-  notificationTime: z.string().regex(/^\d{2}:\d{2}$/, 'Horário inválido'),
-})
+interface NotificationsSectionProps {
+  enabled: boolean
+  notificationTime: string
+  phoneNumber: string
+  error: string
+  onEnabledChange: (v: boolean) => void
+  onTimeChange: (v: string) => void
+  onPhoneChange: (v: string) => void
+}
 
-function NotificationsSection() {
-  const { token } = useAuth()
-  const [enabled, setEnabled] = useState(false)
-  const [notificationTime, setNotificationTime] = useState('08:00')
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-
-  useEffect(() => {
-    if (!token) return
-    api.getNotificationPrefs(token)
-      .then((prefs: NotificationPreference) => {
-        setEnabled(prefs.enabled)
-        setNotificationTime(prefs.notificationTime)
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [token])
-
-  async function handleSave() {
-    setError(''); setSuccess('')
-    const result = notificationSchema.safeParse({ enabled, notificationTime })
-    if (!result.success) {
-      setError(result.error.flatten().fieldErrors.notificationTime?.[0] ?? 'Dados inválidos')
-      return
-    }
-    if (!token) return
-    setSaving(true)
-    try {
-      await api.upsertNotificationPrefs(result.data, token)
-      setSuccess('Preferências salvas!')
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Falha ao salvar')
-    } finally {
-      setSaving(false)
-    }
-  }
-
+function NotificationsSection({ enabled, notificationTime, phoneNumber, error, onEnabledChange, onTimeChange, onPhoneChange }: NotificationsSectionProps) {
   return (
     <div className={styles.card}>
       <div className={styles.cardHeader}>
@@ -299,37 +183,37 @@ function NotificationsSection() {
         </div>
       </div>
       <div className={styles.cardBody}>
-        {loading ? (
-          <div className="loadingCenter"><div className="spinner" /></div>
-        ) : (
-          <>
-            {error && <p className={styles.error}>{error}</p>}
-            {success && <p className={styles.success}>{success}</p>}
+        {error && <p className={styles.error}>{error}</p>}
 
-            <div className={styles.toggleRow}>
-              <span className={styles.toggleLabel}>Ativar notificações</span>
-              <label className={styles.toggle}>
-                <input type="checkbox" checked={enabled} onChange={e => setEnabled(e.target.checked)} />
-                <span className={styles.toggleSlider} />
-              </label>
-            </div>
+        <div className={styles.field}>
+          <label className={styles.label}>Telefone WhatsApp</label>
+          <input
+            className={styles.textInput}
+            type="tel"
+            value={phoneNumber}
+            onChange={e => onPhoneChange(e.target.value)}
+            placeholder="+35699999999"
+          />
+        </div>
 
-            <div className={styles.field}>
-              <label className={styles.label}>Horário do lembrete</label>
-              <input
-                className={styles.timeInput}
-                type="time"
-                value={notificationTime}
-                onChange={e => setNotificationTime(e.target.value)}
-                disabled={!enabled}
-              />
-            </div>
+        <div className={styles.toggleRow}>
+          <span className={styles.toggleLabel}>Ativar notificações</span>
+          <label className={styles.toggle}>
+            <input type="checkbox" checked={enabled} onChange={e => onEnabledChange(e.target.checked)} />
+            <span className={styles.toggleSlider} />
+          </label>
+        </div>
 
-            <button className={styles.primaryBtn} onClick={handleSave} disabled={saving}>
-              {saving ? 'Salvando…' : 'Salvar preferências'}
-            </button>
-          </>
-        )}
+        <div className={styles.field}>
+          <label className={styles.label}>Horário do lembrete</label>
+          <input
+            className={styles.timeInput}
+            type="time"
+            value={notificationTime}
+            onChange={e => onTimeChange(e.target.value)}
+            disabled={!enabled}
+          />
+        </div>
       </div>
     </div>
   )
@@ -338,6 +222,118 @@ function NotificationsSection() {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export function CollectionSettings() {
+  const { token } = useAuth()
+
+  // Address
+  const [street, setStreet] = useState('')
+  const [city, setCity] = useState('')
+  const [addressErrors, setAddressErrors] = useState<Record<string, string>>({})
+
+  // Schedules: desired selection + persisted map (trashType → scheduleId)
+  const [selected, setSelected] = useState<Set<TrashType>>(new Set())
+  const [savedSchedules, setSavedSchedules] = useState<Record<string, number | null>>({
+    organic: null, mixed: null, recyclable: null, glass: null,
+  })
+
+  // Notifications
+  const [notifEnabled, setNotifEnabled] = useState(false)
+  const [notifTime, setNotifTime] = useState('08:00')
+  const [notifPhone, setNotifPhone] = useState('')
+  const [notifError, setNotifError] = useState('')
+
+  // Global
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [success, setSuccess] = useState('')
+
+  useEffect(() => {
+    if (!token) return
+    Promise.all([
+      api.getAddress(token).catch(() => null),
+      api.getSchedules(token).catch(() => [] as Awaited<ReturnType<typeof api.getSchedules>>),
+      api.getNotificationPrefs(token).catch(() => null),
+    ]).then(([addr, schedules, prefs]) => {
+      if (addr) {
+        setStreet(addr.street ?? '')
+        setCity(addr.city ?? '')
+      }
+      const map: Record<string, number | null> = { organic: null, mixed: null, recyclable: null, glass: null }
+      const sel = new Set<TrashType>()
+      schedules.forEach(s => {
+        map[s.trashType] = s.id
+        sel.add(s.trashType as TrashType)
+      })
+      setSavedSchedules(map)
+      setSelected(sel)
+      if (prefs) {
+        setNotifEnabled(prefs.enabled)
+        setNotifTime(prefs.notificationTime)
+        if (prefs.phoneNumber) setNotifPhone(prefs.phoneNumber)
+      }
+    }).finally(() => setLoading(false))
+  }, [token])
+
+  function handleToggle(type: TrashType) {
+    setSelected(prev => {
+      const next = new Set(prev)
+      if (next.has(type)) next.delete(type)
+      else next.add(type)
+      return next
+    })
+  }
+
+  async function handleSave() {
+    setAddressErrors({})
+    setNotifError('')
+    setSuccess('')
+
+    const addrResult = addressSchema.safeParse({ street, city })
+    if (!addrResult.success) {
+      const flat = addrResult.error.flatten().fieldErrors
+      setAddressErrors(Object.fromEntries(Object.entries(flat).map(([k, v]) => [k, v?.[0] ?? ''])))
+      return
+    }
+
+    const notifResult = notificationSchema.safeParse({ enabled: notifEnabled, notificationTime: notifTime, phoneNumber: notifPhone || undefined })
+    if (!notifResult.success) {
+      const errs = notifResult.error.flatten().fieldErrors
+      setNotifError(errs.notificationTime?.[0] ?? errs.phoneNumber?.[0] ?? 'Dados inválidos')
+      return
+    }
+
+    if (!token) return
+    setSaving(true)
+    try {
+      await api.upsertAddress({
+        street: addrResult.data.street || undefined,
+        city: addrResult.data.city,
+      }, token)
+
+      const toDelete = TRASH_TYPES.filter(t => !selected.has(t) && savedSchedules[t] !== null)
+      const toCreate = TRASH_TYPES.filter(t => selected.has(t) && savedSchedules[t] === null)
+
+      await Promise.all(toDelete.map(t => api.deleteSchedule(savedSchedules[t]!, token)))
+      const createdResults = await Promise.all(toCreate.map(t => api.createSchedule({ trashType: t }, token)))
+
+      const newMap = { ...savedSchedules }
+      toDelete.forEach(t => { newMap[t] = null })
+      toCreate.forEach((t, i) => { newMap[t] = createdResults[i].id })
+      setSavedSchedules(newMap)
+
+      await api.upsertNotificationPrefs({
+        enabled: notifResult.data.enabled,
+        notificationTime: notifResult.data.notificationTime,
+        ...(notifResult.data.phoneNumber ? { phoneNumber: notifResult.data.phoneNumber } : {}),
+      }, token)
+
+      setSuccess('Configurações salvas!')
+    } catch (e) {
+      setAddressErrors({ _: e instanceof Error ? e.message : 'Falha ao salvar' })
+    } finally {
+      setSaving(false)
+    }
+  }
+
   return (
     <div className={styles.page}>
       <AppHeader />
@@ -346,9 +342,36 @@ export function CollectionSettings() {
           <h1 className={styles.pageTitle}>Configurações de coleta</h1>
           <p className={styles.pageSubtitle}>Gerencie seu endereço, agenda e alertas</p>
         </div>
-        <AddressSection />
-        <SchedulesSection />
-        <NotificationsSection />
+        {loading ? (
+          <div className="loadingCenter"><div className="spinner" /></div>
+        ) : (
+          <>
+            <AddressSection
+              street={street}
+              city={city}
+              errors={addressErrors}
+              onStreetChange={setStreet}
+              onCityChange={setCity}
+            />
+            <SchedulesSection
+              selected={selected}
+              onToggle={handleToggle}
+            />
+            <NotificationsSection
+              enabled={notifEnabled}
+              notificationTime={notifTime}
+              phoneNumber={notifPhone}
+              error={notifError}
+              onEnabledChange={setNotifEnabled}
+              onTimeChange={setNotifTime}
+              onPhoneChange={setNotifPhone}
+            />
+            {success && <p className={styles.success}>{success}</p>}
+            <button className={styles.primaryBtn} onClick={handleSave} disabled={saving}>
+              {saving ? 'Salvando…' : 'Salvar configurações'}
+            </button>
+          </>
+        )}
       </div>
     </div>
   )

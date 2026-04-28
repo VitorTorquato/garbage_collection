@@ -64,11 +64,13 @@ export interface NotificationPreference {
   id: number
   enabled: boolean
   notificationTime: string
+  phoneNumber: string | null
 }
 
 export interface UpsertNotificationPrefsDto {
   enabled: boolean
   notificationTime: string
+  phoneNumber?: string
 }
 
 // ── API ──────────────────────────────────────────────────────────────────────
