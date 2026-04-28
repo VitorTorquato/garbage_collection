@@ -5,7 +5,7 @@ import styles from './AppHeader.module.css'
 export function AppHeader() {
   return (
     <header className={styles.header}>
-      <Link to="/home" className={styles.logo}>Waste Collection</Link>
+      <Link to="/home" className={styles.logo}>Waste Day</Link>
       <AvatarPopover />
     </header>
   )
