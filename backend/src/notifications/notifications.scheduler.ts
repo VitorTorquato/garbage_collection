@@ -1,57 +1,60 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { CronJob } from 'cron';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from './notifications.service';
 
-const WEEKDAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-
 @Injectable()
-export class NotificationsScheduler {
+export class NotificationsScheduler implements OnModuleInit {
   private readonly logger = new Logger(NotificationsScheduler.name);
   private readonly appTimezone = process.env.APP_TIMEZONE ?? 'Europe/Malta';
 
   constructor(
+    private readonly schedulerRegistry: SchedulerRegistry,
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
-  async handleNotifications() {
-    const now = new Date();
-    const formatter = new Intl.DateTimeFormat('en-GB', {
-      timeZone: this.appTimezone,
-      weekday: 'long',
-      hour: '2-digit',
-      minute: '2-digit',
-      hourCycle: 'h23',
+  async onModuleInit() {
+    const prefs = await this.prisma.notificationPreference.findMany({
+      where: { enabled: true },
     });
-    const parts = formatter.formatToParts(now);
-    const weekdayPart = parts.find((p) => p.type === 'weekday')?.value.toLowerCase();
-    const hourPart = parts.find((p) => p.type === 'hour')?.value ?? '00';
-    const minutePart = parts.find((p) => p.type === 'minute')?.value ?? '00';
-    const currentDay = WEEKDAYS.includes(weekdayPart ?? '') ? weekdayPart! : WEEKDAYS[now.getDay()];
-    const currentTime = `${hourPart}:${minutePart}`;
+    for (const pref of prefs) {
+      this.scheduleUser(pref.userId, pref.notificationTime);
+    }
+    this.logger.log(`Bootstrapped ${prefs.length} notification job(s)`);
+  }
 
-    this.logger.log(
-      `Cron tick — tz: ${this.appTimezone}, day: ${currentDay}, time: ${currentTime}`,
+  scheduleUser(userId: number, notificationTime: string) {
+    const [hour, minute] = notificationTime.split(':');
+    const cronExpression = `${minute} ${hour} * * *`;
+    const name = `notification-user-${userId}`;
+
+    if (this.schedulerRegistry.doesExist('cron', name)) {
+      this.schedulerRegistry.deleteCronJob(name);
+    }
+
+    const job = new CronJob(
+      cronExpression,
+      () => {
+        this.notificationsService
+          .buildAndSendNotification(userId)
+          .catch((err) => this.logger.error(`Failed to notify user ${userId}: ${err}`));
+      },
+      null,
+      true,
+      this.appTimezone,
     );
 
-    const duePreferences = await this.prisma.notificationPreference.findMany({
-      where: {
-        enabled: true,
-        notificationTime: currentTime,
-      },
-    });
+    this.schedulerRegistry.addCronJob(name, job);
+    this.logger.log(`Scheduled notification for user ${userId} at ${notificationTime} (${this.appTimezone})`);
+  }
 
-    this.logger.log(`Found ${duePreferences.length} user(s) due for notification`);
-
-    for (const pref of duePreferences) {
-      try {
-        await this.notificationsService.buildAndSendNotification(pref.userId);
-        this.logger.log(`Notification sent to user ${pref.userId}`);
-      } catch (err) {
-        this.logger.error(`Failed to notify user ${pref.userId}: ${err}`);
-      }
+  unscheduleUser(userId: number) {
+    const name = `notification-user-${userId}`;
+    if (this.schedulerRegistry.doesExist('cron', name)) {
+      this.schedulerRegistry.deleteCronJob(name);
+      this.logger.log(`Removed notification job for user ${userId}`);
     }
   }
 }
