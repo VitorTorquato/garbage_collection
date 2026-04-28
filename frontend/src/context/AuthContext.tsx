@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(newToken)
 
     const userId = decodeTokenSub(newToken)
-    const res = await fetch(`http://localhost:3000/users/${userId}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL ?? 'http://localhost:3000'}/users/${userId}`, {
       headers: { Authorization: `Bearer ${newToken}` },
     })
     if (res.ok) {
