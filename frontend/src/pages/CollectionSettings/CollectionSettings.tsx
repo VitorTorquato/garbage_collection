@@ -3,7 +3,6 @@ import { z } from 'zod'
 import { AppHeader } from '../../components/AppHeader/AppHeader'
 import { useAuth } from '../../context/AuthContext'
 import { api } from '../../services/api'
-import type { NotificationPreference, UserAddress } from '../../services/api'
 import scheduleImg from '../../assets/garbage-collection.jpeg'
 import styles from './CollectionSettings.module.css'
 
