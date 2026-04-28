@@ -30,6 +30,26 @@
   }
 }
 
+@media (max-width: 480px) {
+  .content {
+    padding: 16px 12px 48px;
+    gap: 12px;
+  }
+
+  .cardHeader {
+    padding: 12px 14px 10px;
+  }
+
+  .calBody {
+    padding: 10px 8px;
+  }
+
+  .nextBody {
+    padding: 14px;
+    gap: 12px;
+  }
+}
+
 /* ── Card ─────────────────────────────────── */
 
 .card {

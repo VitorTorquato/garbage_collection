@@ -17,3 +17,9 @@
   text-decoration: none;
   letter-spacing: -0.3px;
 }
+
+@media (max-width: 480px) {
+  .header {
+    padding: 12px 16px;
+  }
+}

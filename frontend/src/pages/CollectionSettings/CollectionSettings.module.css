@@ -34,6 +34,9 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: visible;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .cardHeader {
@@ -357,6 +360,8 @@
   font-family: var(--sans);
   outline: none;
   transition: border-color 0.15s;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .timeInput:focus {
@@ -498,4 +503,44 @@
 .dayBtnActive:hover:not(:disabled) {
   opacity: 0.88;
   color: #fff;
+}
+
+/* ── Mobile ───────────────────────────────── */
+
+@media (max-width: 480px) {
+  .content {
+    padding: 16px 20px 48px;
+    gap: 16px;
+  }
+
+  .cardHeader {
+    flex-wrap: wrap;
+    padding: 14px 16px 12px;
+    gap: 10px;
+  }
+
+  .cardBody {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .trashTypeRow {
+    gap: 8px;
+    padding: 10px 0;
+  }
+
+  .addBtn,
+  .removeBtn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .ghostBtn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .trashTypeSchedule {
+    word-break: break-word;
+  }
 }
