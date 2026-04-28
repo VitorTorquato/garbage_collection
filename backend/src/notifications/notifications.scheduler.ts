@@ -8,6 +8,7 @@ const WEEKDAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'frida
 @Injectable()
 export class NotificationsScheduler {
   private readonly logger = new Logger(NotificationsScheduler.name);
+  private readonly appTimezone = process.env.APP_TIMEZONE ?? 'Europe/Malta';
 
   constructor(
     private readonly prisma: PrismaService,
@@ -17,10 +18,46 @@ export class NotificationsScheduler {
   @Cron(CronExpression.EVERY_MINUTE)
   async handleNotifications() {
     const now = new Date();
-    const currentDay = WEEKDAYS[now.getDay()];
-    const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const formatter = new Intl.DateTimeFormat('en-GB', {
+      timeZone: this.appTimezone,
+      weekday: 'long',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
+    });
+    const parts = formatter.formatToParts(now);
+    const weekdayPart = parts.find((p) => p.type === 'weekday')?.value.toLowerCase();
+    const hourPart = parts.find((p) => p.type === 'hour')?.value ?? '00';
+    const minutePart = parts.find((p) => p.type === 'minute')?.value ?? '00';
+    const currentDay = WEEKDAYS.includes(weekdayPart ?? '') ? weekdayPart! : WEEKDAYS[now.getDay()];
+    const currentTime = `${hourPart}:${minutePart}`;
 
-    this.logger.log(`Cron tick — day: ${currentDay}, time: ${currentTime}`);
+    this.logger.log(
+      `Cron tick — tz: ${this.appTimezone}, day: ${currentDay}, time: ${currentTime}`,
+    );
+
+    // Debug visibility: show a snapshot of current preferences and match status.
+    const allPreferences = await this.prisma.notificationPreference.findMany({
+      select: {
+        userId: true,
+        enabled: true,
+        notificationTime: true,
+        updatedAt: true,
+      },
+      orderBy: { userId: 'asc' },
+    });
+
+    if (!allPreferences.length) {
+      this.logger.log('Debug: notificationPreference table is empty');
+    } else {
+      const debugRows = allPreferences.map((pref) => {
+        const enabledMatch = pref.enabled === true;
+        const timeMatch = pref.notificationTime === currentTime;
+        return `u=${pref.userId} enabled=${pref.enabled} time=${pref.notificationTime} updatedAt=${pref.updatedAt.toISOString()} match={enabled:${enabledMatch},time:${timeMatch}}`;
+      });
+      this.logger.log(`Debug: preferences snapshot (${allPreferences.length})`);
+      for (const row of debugRows) this.logger.log(`Debug: ${row}`);
+    }
 
     const duePreferences = await this.prisma.notificationPreference.findMany({
       where: {

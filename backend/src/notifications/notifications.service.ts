@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpsertNotificationPrefsDto } from './dto/upsert-notification-prefs.dto';
 import { getUpcomingDays } from '../collection-schedule/utils/upcoming-dates.util';
@@ -17,8 +17,10 @@ function localDateString(d: Date): string {
 
 @Injectable()
 export class NotificationsService {
+  private readonly logger = new Logger(NotificationsService.name);
   private readonly twilioClient: twilio.Twilio;
   private readonly fromNumber: string;
+  private readonly appTimezone = process.env.APP_TIMEZONE ?? 'Europe/Malta';
 
   constructor(private readonly prisma: PrismaService) {
     this.twilioClient = twilio.default(
@@ -74,17 +76,40 @@ export class NotificationsService {
       include: { collectionSchedules: true },
     });
 
-    if (!user?.phoneNumber || !user.collectionSchedules.length) return;
+    if (!user?.phoneNumber) {
+      this.logger.log(`Skipping user ${userId}: missing phone number`);
+      return;
+    }
+    if (!user.collectionSchedules.length) {
+      this.logger.log(`Skipping user ${userId}: no collection schedules`);
+      return;
+    }
 
     const trashTypes = user.collectionSchedules.map((s) => s.trashType as string);
-    const today = new Date();
+    const now = new Date();
+    const dateFormatter = new Intl.DateTimeFormat('en-GB', {
+      timeZone: this.appTimezone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+    const dateParts = dateFormatter.formatToParts(now);
+    const year = dateParts.find((p) => p.type === 'year')?.value ?? '1970';
+    const month = dateParts.find((p) => p.type === 'month')?.value ?? '01';
+    const day = dateParts.find((p) => p.type === 'day')?.value ?? '01';
+    const today = new Date(`${year}-${month}-${day}T00:00:00`);
     const todayStr = localDateString(today);
 
     const todayEntry = getUpcomingDays(trashTypes, today, 1).find(
       (d) => d.date === todayStr,
     );
 
-    if (!todayEntry) return;
+    if (!todayEntry) {
+      this.logger.log(
+        `Skipping user ${userId}: no collection today (${todayStr}) for configured trash types`,
+      );
+      return;
+    }
 
     const typeNames = todayEntry.trashTypes
       .map((t) => TRASH_LABELS[t] ?? t)
@@ -94,6 +119,7 @@ export class NotificationsService {
 
     const message = `Hi ${user.name}! Today is ${typeNames} collection day. Don't forget to put your ${bin} out!`;
 
-    await this.sendWhatsApp(user.phoneNumber, message);
+    const sendResult = await this.sendWhatsApp(user.phoneNumber, message);
+    this.logger.log(`Twilio message queued for user ${userId}: sid=${sendResult.sid}`);
   }
 }
