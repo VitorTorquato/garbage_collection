@@ -36,29 +36,6 @@ export class NotificationsScheduler {
       `Cron tick — tz: ${this.appTimezone}, day: ${currentDay}, time: ${currentTime}`,
     );
 
-    // Debug visibility: show a snapshot of current preferences and match status.
-    const allPreferences = await this.prisma.notificationPreference.findMany({
-      select: {
-        userId: true,
-        enabled: true,
-        notificationTime: true,
-        updatedAt: true,
-      },
-      orderBy: { userId: 'asc' },
-    });
-
-    if (!allPreferences.length) {
-      this.logger.log('Debug: notificationPreference table is empty');
-    } else {
-      const debugRows = allPreferences.map((pref) => {
-        const enabledMatch = pref.enabled === true;
-        const timeMatch = pref.notificationTime === currentTime;
-        return `u=${pref.userId} enabled=${pref.enabled} time=${pref.notificationTime} updatedAt=${pref.updatedAt.toISOString()} match={enabled:${enabledMatch},time:${timeMatch}}`;
-      });
-      this.logger.log(`Debug: preferences snapshot (${allPreferences.length})`);
-      for (const row of debugRows) this.logger.log(`Debug: ${row}`);
-    }
-
     const duePreferences = await this.prisma.notificationPreference.findMany({
       where: {
         enabled: true,
