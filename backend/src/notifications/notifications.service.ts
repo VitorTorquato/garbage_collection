@@ -115,9 +115,8 @@ export class NotificationsService {
       .map((t) => TRASH_LABELS[t] ?? t)
       .join(' and ');
 
-    const bin = todayEntry.trashTypes.length > 1 ? 'garbages' : 'garbage';
 
-    const message = `Hi ${user.name}! Today is ${typeNames} collection day. Don't forget to put your ${bin} out!`;
+    const message = `Hi ${user.name}! Today is ${typeNames} collection day. Don't forget to put your waste out!`;
 
     const sendResult = await this.sendWhatsApp(user.phoneNumber, message);
     this.logger.log(`Twilio message queued for user ${userId}: sid=${sendResult.sid}`);
