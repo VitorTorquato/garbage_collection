@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { api } from '../../services/api'
 import styles from './SignUp.module.css'
 
@@ -19,6 +20,7 @@ function EyeIcon({ open }: { open: boolean }) {
 }
 
 export function SignUp() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   const [name, setName] = useState('')
@@ -38,7 +40,7 @@ export function SignUp() {
       await api.signUp(name, email, password, phoneNumber || undefined)
       navigate('/signin')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Algo deu errado')
+      setError(err instanceof Error ? err.message : t('signUp.error'))
     } finally {
       setLoading(false)
     }
@@ -47,35 +49,35 @@ export function SignUp() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <h1 className={styles.title}>Criar conta</h1>
-        <p className={styles.subtitle}>Comece a gerenciar sua agenda de coleta</p>
+        <h1 className={styles.title}>{t('signUp.title')}</h1>
+        <p className={styles.subtitle}>{t('signUp.subtitle')}</p>
 
         <form className={styles.form} onSubmit={handleSubmit}>
           {error && <p className={styles.error}>{error}</p>}
 
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="name">Nome</label>
+            <label className={styles.label} htmlFor="name">{t('signUp.name')}</label>
             <input
               id="name"
               className={styles.input}
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Seu nome"
+              placeholder={t('signUp.namePlaceholder')}
               required
               autoComplete="name"
             />
           </div>
 
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="email">E-mail</label>
+            <label className={styles.label} htmlFor="email">{t('signUp.email')}</label>
             <input
               id="email"
               className={styles.input}
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="voce@exemplo.com"
+              placeholder={t('signUp.emailPlaceholder')}
               required
               autoComplete="email"
             />
@@ -83,7 +85,7 @@ export function SignUp() {
 
           <div className={styles.field}>
             <label className={styles.label} htmlFor="phone">
-              WhatsApp <span className={styles.optional}>(opcional)</span>
+              {t('signUp.whatsapp')} <span className={styles.optional}>{t('signUp.optional')}</span>
             </label>
             <input
               id="phone"
@@ -97,7 +99,7 @@ export function SignUp() {
           </div>
 
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="password">Senha</label>
+            <label className={styles.label} htmlFor="password">{t('signUp.password')}</label>
             <div className={styles.passwordWrapper}>
               <input
                 id="password"
@@ -105,7 +107,7 @@ export function SignUp() {
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Mín. 6 caracteres"
+                placeholder={t('signUp.passwordPlaceholder')}
                 required
                 minLength={6}
                 autoComplete="new-password"
@@ -114,7 +116,7 @@ export function SignUp() {
                 type="button"
                 className={styles.eyeBtn}
                 onClick={() => setShowPassword(v => !v)}
-                aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                aria-label={showPassword ? t('signUp.hidePassword') : t('signUp.showPassword')}
               >
                 <EyeIcon open={showPassword} />
               </button>
@@ -122,13 +124,13 @@ export function SignUp() {
           </div>
 
           <button className={styles.button} type="submit" disabled={loading}>
-            {loading ? 'Criando conta…' : 'Criar conta'}
+            {loading ? t('signUp.creating') : t('signUp.create')}
           </button>
         </form>
 
         <p className={styles.footer}>
-          Já tem uma conta?{' '}
-          <Link to="/signin" className={styles.link}>Entrar</Link>
+          {t('signUp.hasAccount')}{' '}
+          <Link to="/signin" className={styles.link}>{t('signUp.signIn')}</Link>
         </p>
       </div>
     </div>

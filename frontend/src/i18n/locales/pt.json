@@ -1,0 +1,98 @@
+{
+  "home": {
+    "weekdays": ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "inDays": "Em {{count}} dias",
+    "nextCollection": "Próxima coleta",
+    "noneScheduled": "Nenhuma coleta programada.",
+    "emptyTitle": "Nenhuma agenda de coleta cadastrada",
+    "emptyText": "Configure os tipos de lixo coletados no seu endereço para ver o calendário.",
+    "emptyBtn": "Configurar agenda",
+    "prevMonth": "Mês anterior",
+    "nextMonth": "Próximo mês"
+  },
+  "trash": {
+    "organic": "Orgânico",
+    "mixed": "Misturado",
+    "recyclable": "Reciclável",
+    "glass": "Vidro",
+    "organicSchedule": "Toda segunda, quarta e sexta-feira",
+    "mixedSchedule": "Toda terça-feira e sábado",
+    "recyclableSchedule": "Toda quinta-feira",
+    "glassSchedule": "Primeira e terceira sexta-feira do mês"
+  },
+  "signIn": {
+    "title": "Bem-vindo de volta",
+    "subtitle": "Entre na sua conta",
+    "email": "E-mail",
+    "emailPlaceholder": "voce@exemplo.com",
+    "password": "Senha",
+    "showPassword": "Mostrar senha",
+    "hidePassword": "Ocultar senha",
+    "signingIn": "Entrando…",
+    "signIn": "Entrar",
+    "rememberMe": "Manter-me conectado",
+    "noAccount": "Não tem uma conta?",
+    "signUp": "Cadastre-se",
+    "error": "Algo deu errado"
+  },
+  "signUp": {
+    "title": "Criar conta",
+    "subtitle": "Comece a gerenciar sua agenda de coleta",
+    "name": "Nome",
+    "namePlaceholder": "Seu nome",
+    "email": "E-mail",
+    "emailPlaceholder": "voce@exemplo.com",
+    "whatsapp": "WhatsApp",
+    "optional": "(opcional)",
+    "password": "Senha",
+    "passwordPlaceholder": "Mín. 6 caracteres",
+    "showPassword": "Mostrar senha",
+    "hidePassword": "Ocultar senha",
+    "creating": "Criando conta…",
+    "create": "Criar conta",
+    "hasAccount": "Já tem uma conta?",
+    "signIn": "Entrar",
+    "error": "Algo deu errado"
+  },
+  "settings": {
+    "title": "Configurações de coleta",
+    "subtitle": "Gerencie seu endereço, agenda e alertas",
+    "address": {
+      "title": "Endereço",
+      "subtitle": "Localização do ponto de coleta",
+      "street": "Rua",
+      "city": "Cidade *",
+      "cityRequired": "Cidade é obrigatória"
+    },
+    "schedules": {
+      "title": "Agendas de coleta",
+      "subtitle": "Selecione os tipos de lixo coletados no seu endereço",
+      "viewCalendar": "Ver calendário",
+      "remove": "Remover",
+      "add": "Adicionar",
+      "calendarTitle": "Calendário de coleta de Malta",
+      "calendarAlt": "Calendário nacional de coleta de resíduos domésticos de Malta"
+    },
+    "notifications": {
+      "title": "Notificações WhatsApp",
+      "subtitle": "Receba uma mensagem no WhatsApp nos dias em que houver coleta configurada",
+      "phone": "Telefone WhatsApp",
+      "enable": "Ativar notificações",
+      "time": "Horário do lembrete",
+      "invalidTime": "Horário inválido",
+      "invalidPhone": "Telefone inválido (ex: +35699999999)",
+      "invalidData": "Dados inválidos"
+    },
+    "saved": "Configurações salvas!",
+    "saveFailed": "Falha ao salvar",
+    "saving": "Salvando…",
+    "save": "Salvar configurações"
+  },
+  "avatar": {
+    "openMenu": "Abrir menu da conta",
+    "collectionSettings": "Configurações de coleta",
+    "signOut": "Sair"
+  }
+}

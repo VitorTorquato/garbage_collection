@@ -1,0 +1,98 @@
+{
+  "home": {
+    "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "inDays": "In {{count}} days",
+    "nextCollection": "Next collection",
+    "noneScheduled": "No collections scheduled.",
+    "emptyTitle": "No collection schedules registered",
+    "emptyText": "Configure the types of waste collected at your address to see the calendar.",
+    "emptyBtn": "Set up schedule",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month"
+  },
+  "trash": {
+    "organic": "Organic",
+    "mixed": "Mixed",
+    "recyclable": "Recyclable",
+    "glass": "Glass",
+    "organicSchedule": "Every Monday, Wednesday and Friday",
+    "mixedSchedule": "Every Tuesday and Saturday",
+    "recyclableSchedule": "Every Thursday",
+    "glassSchedule": "First and third Friday of the month"
+  },
+  "signIn": {
+    "title": "Welcome back",
+    "subtitle": "Sign in to your account",
+    "email": "E-mail",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "signingIn": "Signing in…",
+    "signIn": "Sign in",
+    "rememberMe": "Keep me logged in",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "error": "Something went wrong"
+  },
+  "signUp": {
+    "title": "Create account",
+    "subtitle": "Start managing your collection schedule",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "E-mail",
+    "emailPlaceholder": "you@example.com",
+    "whatsapp": "WhatsApp",
+    "optional": "(optional)",
+    "password": "Password",
+    "passwordPlaceholder": "Min. 6 characters",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "creating": "Creating account…",
+    "create": "Create account",
+    "hasAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "error": "Something went wrong"
+  },
+  "settings": {
+    "title": "Collection settings",
+    "subtitle": "Manage your address, schedule and alerts",
+    "address": {
+      "title": "Address",
+      "subtitle": "Collection point location",
+      "street": "Street",
+      "city": "City *",
+      "cityRequired": "City is required"
+    },
+    "schedules": {
+      "title": "Collection schedules",
+      "subtitle": "Select the types of waste collected at your address",
+      "viewCalendar": "View calendar",
+      "remove": "Remove",
+      "add": "Add",
+      "calendarTitle": "Malta collection calendar",
+      "calendarAlt": "Malta national household waste collection calendar"
+    },
+    "notifications": {
+      "title": "WhatsApp Notifications",
+      "subtitle": "Receive a WhatsApp message on collection days",
+      "phone": "WhatsApp Phone",
+      "enable": "Enable notifications",
+      "time": "Reminder time",
+      "invalidTime": "Invalid time",
+      "invalidPhone": "Invalid phone (e.g.: +35699999999)",
+      "invalidData": "Invalid data"
+    },
+    "saved": "Settings saved!",
+    "saveFailed": "Failed to save",
+    "saving": "Saving…",
+    "save": "Save settings"
+  },
+  "avatar": {
+    "openMenu": "Open account menu",
+    "collectionSettings": "Collection settings",
+    "signOut": "Sign out"
+  }
+}

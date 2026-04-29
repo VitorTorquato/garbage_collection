@@ -1,10 +1,12 @@
 import { useRef, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import styles from './AvatarPopover.module.css'
 
 export function AvatarPopover() {
   const { user, logout } = useAuth()
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -38,7 +40,7 @@ export function AvatarPopover() {
       <button
         className={styles.badge}
         onClick={() => setOpen((v) => !v)}
-        aria-label="Abrir menu da conta"
+        aria-label={t('avatar.openMenu')}
       >
         {initial}
       </button>
@@ -54,7 +56,7 @@ export function AvatarPopover() {
 
           <div className={styles.menu}>
             <button className={styles.menuItem} onClick={handleSettings}>
-              Configurações de coleta
+              {t('avatar.collectionSettings')}
             </button>
           </div>
 
@@ -65,7 +67,7 @@ export function AvatarPopover() {
               className={`${styles.menuItem} ${styles.menuItemDanger}`}
               onClick={handleLogout}
             >
-              Sair
+              {t('avatar.signOut')}
             </button>
           </div>
         </div>

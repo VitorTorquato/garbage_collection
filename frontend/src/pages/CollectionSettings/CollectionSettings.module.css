@@ -15,6 +15,32 @@
   gap: 24px;
 }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.backBtn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.backBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .pageTitle {
   font-size: 22px;
   font-weight: 700;
@@ -503,6 +529,138 @@
 .dayBtnActive:hover:not(:disabled) {
   opacity: 0.88;
   color: #fff;
+}
+
+.skeletonCard {
+  overflow: hidden;
+}
+
+/* ── Skeleton loading ─────────────────────── */
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeletonHeader {
+  height: 72px;
+  background: linear-gradient(90deg, var(--border) 25%, oklch(95% 0.005 163.225) 50%, var(--border) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 0;
+}
+
+.skeletonBody {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.skeletonField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.skeletonLabel {
+  height: 12px;
+  width: 28%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--border) 25%, oklch(95% 0.005 163.225) 50%, var(--border) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.skeletonInput {
+  height: 41px;
+  width: 100%;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--border) 25%, oklch(95% 0.005 163.225) 50%, var(--border) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.skeletonRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 4px;
+}
+
+.skeletonRow + .skeletonRow {
+  border-top: 1px solid var(--border);
+}
+
+.skeletonDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, var(--border) 25%, oklch(95% 0.005 163.225) 50%, var(--border) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.skeletonRowContent {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.skeletonRowLabel {
+  height: 13px;
+  width: 35%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--border) 25%, oklch(95% 0.005 163.225) 50%, var(--border) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.skeletonRowSub {
+  height: 11px;
+  width: 60%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--border) 25%, oklch(95% 0.005 163.225) 50%, var(--border) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.skeletonBtn {
+  width: 58px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--border) 25%, oklch(95% 0.005 163.225) 50%, var(--border) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.skeletonToggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.skeletonToggleLabel {
+  height: 13px;
+  width: 38%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--border) 25%, oklch(95% 0.005 163.225) 50%, var(--border) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.skeletonToggle {
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 24px;
+  background: linear-gradient(90deg, var(--border) 25%, oklch(95% 0.005 163.225) 50%, var(--border) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
 }
 
 /* ── Mobile ───────────────────────────────── */

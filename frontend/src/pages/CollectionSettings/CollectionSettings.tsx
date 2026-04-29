@@ -1,5 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { z } from 'zod'
+import { useTranslation } from 'react-i18next'
 import { AppHeader } from '../../components/AppHeader/AppHeader'
 import { useAuth } from '../../context/AuthContext'
 import { api } from '../../services/api'
@@ -11,29 +13,17 @@ import styles from './CollectionSettings.module.css'
 const TRASH_TYPES = ['organic', 'mixed', 'recyclable', 'glass'] as const
 type TrashType = typeof TRASH_TYPES[number]
 
-const TRASH_INFO: Record<TrashType, { label: string; schedule: string; color: string }> = {
-  organic:    { label: 'Orgânico',   schedule: 'Toda segunda, quarta e sexta-feira',       color: '#16a34a' },
-  mixed:      { label: 'Misturado',  schedule: 'Toda terça-feira e sábado',                color: '#ca8a04' },
-  recyclable: { label: 'Reciclável', schedule: 'Toda quinta-feira',                        color: '#2563eb' },
-  glass:      { label: 'Vidro',      schedule: 'Primeira e última sexta-feira do mês',     color: '#9333ea' },
+const TRASH_COLORS: Record<TrashType, string> = {
+  organic: '#16a34a',
+  mixed: '#ca8a04',
+  recyclable: '#2563eb',
+  glass: '#0891b2',
 }
-
-// ── Zod schemas ───────────────────────────────────────────────────────────────
-
-const addressSchema = z.object({
-  street: z.string().optional(),
-  city: z.string().min(1, 'Cidade é obrigatória'),
-})
-
-const notificationSchema = z.object({
-  enabled: z.boolean(),
-  notificationTime: z.string().regex(/^\d{2}:\d{2}$/, 'Horário inválido'),
-  phoneNumber: z.string().regex(/^\+?[1-9]\d{7,14}$/, 'Telefone inválido (ex: +35699999999)').optional().or(z.literal('')),
-})
 
 // ── ScheduleDialog ────────────────────────────────────────────────────────────
 
 function ScheduleDialog({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation()
   const overlayRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -50,13 +40,13 @@ function ScheduleDialog({ onClose }: { onClose: () => void }) {
     >
       <div className={styles.dialog}>
         <div className={styles.dialogHeader}>
-          <p className={styles.dialogTitle}>Calendário de coleta de Malta</p>
-          <button className={styles.dialogClose} onClick={onClose} aria-label="Fechar">✕</button>
+          <p className={styles.dialogTitle}>{t('settings.schedules.calendarTitle')}</p>
+          <button className={styles.dialogClose} onClick={onClose} aria-label="✕">✕</button>
         </div>
         <div className={styles.dialogBody}>
           <img
             src={scheduleImg}
-            alt="Calendário nacional de coleta de resíduos domésticos de Malta"
+            alt={t('settings.schedules.calendarAlt')}
             className={styles.scheduleImage}
           />
         </div>
@@ -76,24 +66,25 @@ interface AddressSectionProps {
 }
 
 function AddressSection({ street, city, errors, onStreetChange, onCityChange }: AddressSectionProps) {
+  const { t } = useTranslation()
   return (
     <div className={styles.card}>
       <div className={styles.cardHeader}>
         <div>
-          <p className={styles.cardTitle}>Endereço</p>
-          <p className={styles.cardSubtitle}>Localização do ponto de coleta</p>
+          <p className={styles.cardTitle}>{t('settings.address.title')}</p>
+          <p className={styles.cardSubtitle}>{t('settings.address.subtitle')}</p>
         </div>
       </div>
       <div className={styles.cardBody}>
         {errors._ && <p className={styles.error}>{errors._}</p>}
 
         <div className={styles.field}>
-          <label className={styles.label}>Rua</label>
+          <label className={styles.label}>{t('settings.address.street')}</label>
           <input className={styles.textInput} value={street} onChange={e => onStreetChange(e.target.value)} placeholder="Triq Naxxar, 12" />
         </div>
 
         <div className={styles.field}>
-          <label className={styles.label}>Cidade *</label>
+          <label className={styles.label}>{t('settings.address.city')}</label>
           <input
             className={`${styles.textInput} ${errors.city ? styles.inputError : ''}`}
             value={city}
@@ -115,7 +106,15 @@ interface SchedulesSectionProps {
 }
 
 function SchedulesSection({ selected, onToggle }: SchedulesSectionProps) {
+  const { t } = useTranslation()
   const [showDialog, setShowDialog] = useState(false)
+
+  const trashInfo = {
+    organic:    { label: t('trash.organic'),    schedule: t('trash.organicSchedule'),    color: TRASH_COLORS.organic },
+    mixed:      { label: t('trash.mixed'),      schedule: t('trash.mixedSchedule'),      color: TRASH_COLORS.mixed },
+    recyclable: { label: t('trash.recyclable'), schedule: t('trash.recyclableSchedule'), color: TRASH_COLORS.recyclable },
+    glass:      { label: t('trash.glass'),      schedule: t('trash.glassSchedule'),      color: TRASH_COLORS.glass },
+  }
 
   return (
     <>
@@ -123,17 +122,17 @@ function SchedulesSection({ selected, onToggle }: SchedulesSectionProps) {
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <div>
-            <p className={styles.cardTitle}>Agendas de coleta</p>
-            <p className={styles.cardSubtitle}>Selecione os tipos de lixo coletados no seu endereço</p>
+            <p className={styles.cardTitle}>{t('settings.schedules.title')}</p>
+            <p className={styles.cardSubtitle}>{t('settings.schedules.subtitle')}</p>
           </div>
           <button className={styles.ghostBtn} onClick={() => setShowDialog(true)}>
-            Ver calendário
+            {t('settings.schedules.viewCalendar')}
           </button>
         </div>
         <div className={styles.cardBody}>
           <div className={styles.trashTypeList}>
             {TRASH_TYPES.map(type => {
-              const info = TRASH_INFO[type]
+              const info = trashInfo[type]
               const active = selected.has(type)
               return (
                 <div key={type} className={`${styles.trashTypeRow} ${active ? styles.trashTypeRowActive : ''}`}>
@@ -146,7 +145,7 @@ function SchedulesSection({ selected, onToggle }: SchedulesSectionProps) {
                     className={active ? styles.removeBtn : styles.addBtn}
                     onClick={() => onToggle(type)}
                   >
-                    {active ? 'Remover' : 'Adicionar'}
+                    {active ? t('settings.schedules.remove') : t('settings.schedules.add')}
                   </button>
                 </div>
               )
@@ -171,21 +170,20 @@ interface NotificationsSectionProps {
 }
 
 function NotificationsSection({ enabled, notificationTime, phoneNumber, error, onEnabledChange, onTimeChange, onPhoneChange }: NotificationsSectionProps) {
+  const { t } = useTranslation()
   return (
     <div className={styles.card}>
       <div className={styles.cardHeader}>
         <div>
-          <p className={styles.cardTitle}>Notificações WhatsApp</p>
-          <p className={styles.cardSubtitle}>
-            Receba uma mensagem no WhatsApp nos dias em que houver coleta configurada
-          </p>
+          <p className={styles.cardTitle}>{t('settings.notifications.title')}</p>
+          <p className={styles.cardSubtitle}>{t('settings.notifications.subtitle')}</p>
         </div>
       </div>
       <div className={styles.cardBody}>
         {error && <p className={styles.error}>{error}</p>}
 
         <div className={styles.field}>
-          <label className={styles.label}>Telefone WhatsApp</label>
+          <label className={styles.label}>{t('settings.notifications.phone')}</label>
           <input
             className={styles.textInput}
             type="tel"
@@ -196,7 +194,7 @@ function NotificationsSection({ enabled, notificationTime, phoneNumber, error, o
         </div>
 
         <div className={styles.toggleRow}>
-          <span className={styles.toggleLabel}>Ativar notificações</span>
+          <span className={styles.toggleLabel}>{t('settings.notifications.enable')}</span>
           <label className={styles.toggle}>
             <input type="checkbox" checked={enabled} onChange={e => onEnabledChange(e.target.checked)} />
             <span className={styles.toggleSlider} />
@@ -204,7 +202,7 @@ function NotificationsSection({ enabled, notificationTime, phoneNumber, error, o
         </div>
 
         <div className={styles.field}>
-          <label className={styles.label}>Horário do lembrete</label>
+          <label className={styles.label}>{t('settings.notifications.time')}</label>
           <input
             className={styles.timeInput}
             type="time"
@@ -218,10 +216,82 @@ function NotificationsSection({ enabled, notificationTime, phoneNumber, error, o
   )
 }
 
+// ── SettingsSkeleton ──────────────────────────────────────────────────────────
+
+function SettingsSkeleton() {
+  return (
+    <>
+      {/* Address */}
+      <div className={`${styles.card} ${styles.skeletonCard}`}>
+        <div className={styles.skeletonHeader} />
+        <div className={styles.skeletonBody}>
+          <div className={styles.skeletonField}>
+            <div className={styles.skeletonLabel} />
+            <div className={styles.skeletonInput} />
+          </div>
+          <div className={styles.skeletonField}>
+            <div className={styles.skeletonLabel} />
+            <div className={styles.skeletonInput} />
+          </div>
+        </div>
+      </div>
+
+      {/* Schedules */}
+      <div className={`${styles.card} ${styles.skeletonCard}`}>
+        <div className={styles.skeletonHeader} />
+        <div className={styles.skeletonBody}>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className={styles.skeletonRow}>
+              <div className={styles.skeletonDot} />
+              <div className={styles.skeletonRowContent}>
+                <div className={styles.skeletonRowLabel} />
+                <div className={styles.skeletonRowSub} />
+              </div>
+              <div className={styles.skeletonBtn} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Notifications */}
+      <div className={`${styles.card} ${styles.skeletonCard}`}>
+        <div className={styles.skeletonHeader} />
+        <div className={styles.skeletonBody}>
+          <div className={styles.skeletonField}>
+            <div className={styles.skeletonLabel} />
+            <div className={styles.skeletonInput} />
+          </div>
+          <div className={styles.skeletonToggleRow}>
+            <div className={styles.skeletonToggleLabel} />
+            <div className={styles.skeletonToggle} />
+          </div>
+          <div className={styles.skeletonField}>
+            <div className={styles.skeletonLabel} />
+            <div className={styles.skeletonInput} />
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export function CollectionSettings() {
   const { token } = useAuth()
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+
+  const addressSchema = useMemo(() => z.object({
+    street: z.string().optional(),
+    city: z.string().min(1, t('settings.address.cityRequired')),
+  }), [t])
+
+  const notificationSchema = useMemo(() => z.object({
+    enabled: z.boolean(),
+    notificationTime: z.string().regex(/^\d{2}:\d{2}$/, t('settings.notifications.invalidTime')),
+    phoneNumber: z.string().regex(/^\+?[1-9]\d{7,14}$/, t('settings.notifications.invalidPhone')).optional().or(z.literal('')),
+  }), [t])
 
   // Address
   const [street, setStreet] = useState('')
@@ -296,7 +366,7 @@ export function CollectionSettings() {
     const notifResult = notificationSchema.safeParse({ enabled: notifEnabled, notificationTime: notifTime, phoneNumber: notifPhone || undefined })
     if (!notifResult.success) {
       const errs = notifResult.error.flatten().fieldErrors
-      setNotifError(errs.notificationTime?.[0] ?? errs.phoneNumber?.[0] ?? 'Dados inválidos')
+      setNotifError(errs.notificationTime?.[0] ?? errs.phoneNumber?.[0] ?? t('settings.notifications.invalidData'))
       return
     }
 
@@ -325,9 +395,9 @@ export function CollectionSettings() {
         ...(notifResult.data.phoneNumber ? { phoneNumber: notifResult.data.phoneNumber } : {}),
       }, token)
 
-      setSuccess('Configurações salvas!')
+      setSuccess(t('settings.saved'))
     } catch (e) {
-      setAddressErrors({ _: e instanceof Error ? e.message : 'Falha ao salvar' })
+      setAddressErrors({ _: e instanceof Error ? e.message : t('settings.saveFailed') })
     } finally {
       setSaving(false)
     }
@@ -337,12 +407,20 @@ export function CollectionSettings() {
     <div className={styles.page}>
       <AppHeader />
       <div className={styles.content}>
-        <div>
-          <h1 className={styles.pageTitle}>Configurações de coleta</h1>
-          <p className={styles.pageSubtitle}>Gerencie seu endereço, agenda e alertas</p>
+        <button className={styles.backBtn} onClick={() => navigate(-1)} aria-label="Go back">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+        <div className={styles.titleRow}>
+      
+          <div>
+            <h1 className={styles.pageTitle}>{t('settings.title')}</h1>
+            <p className={styles.pageSubtitle}>{t('settings.subtitle')}</p>
+          </div>
         </div>
         {loading ? (
-          <div className="loadingCenter"><div className="spinner" /></div>
+          <SettingsSkeleton />
         ) : (
           <>
             <AddressSection
@@ -367,7 +445,7 @@ export function CollectionSettings() {
             />
             {success && <p className={styles.success}>{success}</p>}
             <button className={styles.primaryBtn} onClick={handleSave} disabled={saving}>
-              {saving ? 'Salvando…' : 'Salvar configurações'}
+              {saving ? t('settings.saving') : t('settings.save')}
             </button>
           </>
         )}

@@ -1,0 +1,98 @@
+{
+  "home": {
+    "weekdays": ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "inDays": "En {{count}} días",
+    "nextCollection": "Próxima recogida",
+    "noneScheduled": "Ninguna recogida programada.",
+    "emptyTitle": "No hay agendas de recolección registradas",
+    "emptyText": "Configura los tipos de residuos recogidos en tu dirección para ver el calendario.",
+    "emptyBtn": "Configurar agenda",
+    "prevMonth": "Mes anterior",
+    "nextMonth": "Mes siguiente"
+  },
+  "trash": {
+    "organic": "Orgánico",
+    "mixed": "Mezclado",
+    "recyclable": "Reciclable",
+    "glass": "Vidrio",
+    "organicSchedule": "Todos los lunes, miércoles y viernes",
+    "mixedSchedule": "Todos los martes y sábados",
+    "recyclableSchedule": "Todos los jueves",
+    "glassSchedule": "Primer y tercer viernes del mes"
+  },
+  "signIn": {
+    "title": "Bienvenido de nuevo",
+    "subtitle": "Inicia sesión en tu cuenta",
+    "email": "E-mail",
+    "emailPlaceholder": "tu@ejemplo.com",
+    "password": "Contraseña",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "signingIn": "Iniciando sesión…",
+    "signIn": "Iniciar sesión",
+    "rememberMe": "Mantenerme conectado",
+    "noAccount": "¿No tienes una cuenta?",
+    "signUp": "Regístrate",
+    "error": "Algo salió mal"
+  },
+  "signUp": {
+    "title": "Crear cuenta",
+    "subtitle": "Empieza a gestionar tu agenda de recolección",
+    "name": "Nombre",
+    "namePlaceholder": "Tu nombre",
+    "email": "E-mail",
+    "emailPlaceholder": "tu@ejemplo.com",
+    "whatsapp": "WhatsApp",
+    "optional": "(opcional)",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Mín. 6 caracteres",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "creating": "Creando cuenta…",
+    "create": "Crear cuenta",
+    "hasAccount": "¿Ya tienes una cuenta?",
+    "signIn": "Iniciar sesión",
+    "error": "Algo salió mal"
+  },
+  "settings": {
+    "title": "Configuración de recolección",
+    "subtitle": "Gestiona tu dirección, agenda y alertas",
+    "address": {
+      "title": "Dirección",
+      "subtitle": "Ubicación del punto de recolección",
+      "street": "Calle",
+      "city": "Ciudad *",
+      "cityRequired": "La ciudad es obligatoria"
+    },
+    "schedules": {
+      "title": "Agendas de recolección",
+      "subtitle": "Selecciona los tipos de residuos recogidos en tu dirección",
+      "viewCalendar": "Ver calendario",
+      "remove": "Eliminar",
+      "add": "Añadir",
+      "calendarTitle": "Calendario de recolección de Malta",
+      "calendarAlt": "Calendario nacional de recolección de residuos domésticos de Malta"
+    },
+    "notifications": {
+      "title": "Notificaciones WhatsApp",
+      "subtitle": "Recibe un mensaje de WhatsApp los días de recolección configurados",
+      "phone": "Teléfono WhatsApp",
+      "enable": "Activar notificaciones",
+      "time": "Hora del recordatorio",
+      "invalidTime": "Hora inválida",
+      "invalidPhone": "Teléfono inválido (ej: +35699999999)",
+      "invalidData": "Datos inválidos"
+    },
+    "saved": "¡Configuración guardada!",
+    "saveFailed": "Error al guardar",
+    "saving": "Guardando…",
+    "save": "Guardar configuración"
+  },
+  "avatar": {
+    "openMenu": "Abrir menú de cuenta",
+    "collectionSettings": "Configuración de recolección",
+    "signOut": "Cerrar sesión"
+  }
+}

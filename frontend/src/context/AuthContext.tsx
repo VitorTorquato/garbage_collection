@@ -11,7 +11,7 @@ interface AuthContextValue {
   token: string | null
   user: User | null
   isAuthenticated: boolean
-  login: (token: string) => Promise<void>
+  login: (token: string, rememberMe: boolean) => Promise<void>
   logout: () => void
 }
 
@@ -25,17 +25,28 @@ function decodeTokenSub(token: string): number {
   return payload.sub as number
 }
 
+function readStorage(key: string): string | null {
+  return localStorage.getItem(key) ?? sessionStorage.getItem(key)
+}
+
+function clearStorage(key: string) {
+  localStorage.removeItem(key)
+  sessionStorage.removeItem(key)
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(
-    () => localStorage.getItem(TOKEN_KEY)
+    () => readStorage(TOKEN_KEY)
   )
   const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem(USER_KEY)
+    const stored = readStorage(USER_KEY)
     return stored ? (JSON.parse(stored) as User) : null
   })
 
-  async function login(newToken: string) {
-    localStorage.setItem(TOKEN_KEY, newToken)
+  async function login(newToken: string, rememberMe: boolean) {
+    const storage = rememberMe ? localStorage : sessionStorage
+    clearStorage(TOKEN_KEY)
+    storage.setItem(TOKEN_KEY, newToken)
     setToken(newToken)
 
     const userId = decodeTokenSub(newToken)
@@ -44,14 +55,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
     if (res.ok) {
       const profile = (await res.json()) as User
-      localStorage.setItem(USER_KEY, JSON.stringify(profile))
+      clearStorage(USER_KEY)
+      storage.setItem(USER_KEY, JSON.stringify(profile))
       setUser(profile)
     }
   }
 
   function logout() {
-    localStorage.removeItem(TOKEN_KEY)
-    localStorage.removeItem(USER_KEY)
+    clearStorage(TOKEN_KEY)
+    clearStorage(USER_KEY)
     setToken(null)
     setUser(null)
   }

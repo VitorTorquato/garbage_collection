@@ -14,7 +14,7 @@ const MALTA_SCHEDULE: Record<
     type: 'monthly',
     monthlyRules: [
       { week: 'first', weekday: 'friday' },
-      { week: 'last', weekday: 'friday' },
+      { week: 'third', weekday: 'friday' },
     ],
   },
 };

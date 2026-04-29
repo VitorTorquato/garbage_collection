@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { AppHeader } from '../../components/AppHeader/AppHeader'
 import { useAuth } from '../../context/AuthContext'
 import { api } from '../../services/api'
@@ -11,21 +13,10 @@ const TRASH_COLORS: Record<string, string> = {
   organic: '#16a34a',
   mixed: '#ca8a04',
   recyclable: '#2563eb',
-  glass: '#9333ea',
+  glass: '#0891b2',
 }
 
-const TRASH_LABELS: Record<string, string> = {
-  organic: 'Orgânico',
-  mixed: 'Misturado',
-  recyclable: 'Reciclável',
-  glass: 'Vidro',
-}
-
-const WEEKDAY_LABELS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']
-const MONTH_NAMES = [
-  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
-]
+const LOCALE_MAP: Record<string, string> = { en: 'en-GB', pt: 'pt-PT', es: 'es-ES' }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -40,7 +31,7 @@ function todayStr(): string {
 
 // Monday-first offset: Sunday=0 in JS → index 6 in our grid
 function monthStartOffset(year: number, month: number): number {
-  const jsDay = new Date(year, month, 1).getDay() // 0=Sun
+  const jsDay = new Date(year, month, 1).getDay()
   return (jsDay + 6) % 7
 }
 
@@ -48,18 +39,21 @@ function daysInMonth(year: number, month: number): number {
   return new Date(year, month + 1, 0).getDate()
 }
 
-function formatCountdown(dateStr: string): string {
+function formatCountdown(dateStr: string, t: TFunction): string {
   const today = new Date(); today.setHours(0, 0, 0, 0)
   const target = new Date(dateStr + 'T00:00:00')
   const diff = Math.round((target.getTime() - today.getTime()) / 86400000)
-  if (diff === 0) return 'Hoje'
-  if (diff === 1) return 'Amanhã'
-  return `Em ${diff} dias`
+  if (diff === 0) return t('home.today')
+  if (diff === 1) return t('home.tomorrow')
+  return t('home.inDays', { count: diff })
 }
 
-function formatDate(dateStr: string): string {
+function formatDate(dateStr: string, lang: string): string {
   const [y, m, d] = dateStr.split('-').map(Number)
-  return `${d} de ${MONTH_NAMES[m - 1]} de ${y}`
+  const date = new Date(y, m - 1, d)
+  return new Intl.DateTimeFormat(LOCALE_MAP[lang] ?? 'en-GB', {
+    day: 'numeric', month: 'long', year: 'numeric',
+  }).format(date)
 }
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -72,6 +66,7 @@ interface DashboardDay {
 // ── CalendarCard ──────────────────────────────────────────────────────────────
 
 function CalendarCard({ dayMap }: { dayMap: Map<string, string[]> }) {
+  const { t, i18n } = useTranslation()
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth())
@@ -89,10 +84,14 @@ function CalendarCard({ dayMap }: { dayMap: Map<string, string[]> }) {
     const types = new Set<string>()
     for (let d = 1; d <= totalDays; d++) {
       const key = toDateStr(year, month, d)
-      dayMap.get(key)?.forEach(t => types.add(t))
+      dayMap.get(key)?.forEach(tp => types.add(tp))
     }
     return [...types]
   }, [dayMap, year, month, totalDays])
+
+  const weekdays = t('home.weekdays', { returnObjects: true }) as string[]
+  const monthLabel = new Intl.DateTimeFormat(LOCALE_MAP[i18n.language] ?? 'en-GB', { month: 'long' })
+    .format(new Date(year, month, 1))
 
   function prev() {
     if (month === 0) { setYear(y => y - 1); setMonth(11) }
@@ -106,16 +105,18 @@ function CalendarCard({ dayMap }: { dayMap: Map<string, string[]> }) {
   return (
     <div className={styles.card}>
       <div className={styles.cardHeader}>
-        <p className={styles.cardTitle}>{MONTH_NAMES[month]} {year}</p>
+        <p className={styles.cardTitle}>
+          {monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1)} {year}
+        </p>
         <div className={styles.navGroup}>
-          <button className={styles.navBtn} onClick={prev} aria-label="Mês anterior">‹</button>
-          <button className={styles.navBtn} onClick={next} aria-label="Próximo mês">›</button>
+          <button className={styles.navBtn} onClick={prev} aria-label={t('home.prevMonth')}>‹</button>
+          <button className={styles.navBtn} onClick={next} aria-label={t('home.nextMonth')}>›</button>
         </div>
       </div>
 
       <div className={styles.calBody}>
         <div className={styles.weekdayRow}>
-          {WEEKDAY_LABELS.map(d => (
+          {weekdays.map(d => (
             <div key={d} className={styles.weekdayLabel}>{d}</div>
           ))}
         </div>
@@ -129,11 +130,11 @@ function CalendarCard({ dayMap }: { dayMap: Map<string, string[]> }) {
             return (
               <div key={key} className={`${styles.dayCell} ${isToday ? styles.today : ''}`}>
                 <div className={styles.dots}>
-                  {types.map(t => (
-                    <span key={t} className={styles.dotWrapper} data-tooltip={TRASH_LABELS[t] ?? t}>
+                  {types.map(tp => (
+                    <span key={tp} className={styles.dotWrapper} data-tooltip={t(`trash.${tp}`)}>
                       <span
                         className={styles.dot}
-                        style={{ background: TRASH_COLORS[t] ?? '#888' }}
+                        style={{ background: TRASH_COLORS[tp] ?? '#888' }}
                       />
                     </span>
                   ))}
@@ -147,10 +148,10 @@ function CalendarCard({ dayMap }: { dayMap: Map<string, string[]> }) {
 
       {monthTypes.length > 0 && (
         <div className={styles.legend}>
-          {monthTypes.map(t => (
-            <div key={t} className={styles.legendItem}>
-              <span className={styles.legendDot} style={{ background: TRASH_COLORS[t] ?? '#888' }} />
-              {TRASH_LABELS[t] ?? t}
+          {monthTypes.map(tp => (
+            <div key={tp} className={styles.legendItem}>
+              <span className={styles.legendDot} style={{ background: TRASH_COLORS[tp] ?? '#888' }} />
+              {t(`trash.${tp}`)}
             </div>
           ))}
         </div>
@@ -162,28 +163,29 @@ function CalendarCard({ dayMap }: { dayMap: Map<string, string[]> }) {
 // ── NextCollectionCard ────────────────────────────────────────────────────────
 
 function NextCollectionCard({ days }: { days: DashboardDay[] }) {
+  const { t, i18n } = useTranslation()
   const today = todayStr()
   const next = days.find(d => d.date >= today)
 
   return (
     <div className={styles.card}>
       <div className={styles.cardHeader}>
-        <p className={styles.cardTitle}>Próxima coleta</p>
+        <p className={styles.cardTitle}>{t('home.nextCollection')}</p>
       </div>
       <div className={styles.nextBody}>
         {!next ? (
-          <p className={styles.nextEmpty}>Nenhuma coleta programada.</p>
+          <p className={styles.nextEmpty}>{t('home.noneScheduled')}</p>
         ) : (
           <>
             <div>
-              <p className={styles.nextDate}>{formatDate(next.date)}</p>
-              <p className={styles.nextCountdown}>{formatCountdown(next.date)}</p>
+              <p className={styles.nextDate}>{formatDate(next.date, i18n.language)}</p>
+              <p className={styles.nextCountdown}>{formatCountdown(next.date, t)}</p>
             </div>
             <div className={styles.nextTypes}>
-              {next.trashTypes.map(t => (
-                <div key={t} className={styles.nextTypeRow}>
-                  <span className={styles.nextTypeDot} style={{ background: TRASH_COLORS[t] ?? '#888' }} />
-                  <span className={styles.nextTypeLabel}>{TRASH_LABELS[t] ?? t}</span>
+              {next.trashTypes.map(tp => (
+                <div key={tp} className={styles.nextTypeRow}>
+                  <span className={styles.nextTypeDot} style={{ background: TRASH_COLORS[tp] ?? '#888' }} />
+                  <span className={styles.nextTypeLabel}>{t(`trash.${tp}`)}</span>
                 </div>
               ))}
             </div>
@@ -197,6 +199,7 @@ function NextCollectionCard({ days }: { days: DashboardDay[] }) {
 // ── Home ──────────────────────────────────────────────────────────────────────
 
 export function Home() {
+  const { t } = useTranslation()
   const { token } = useAuth()
   const [days, setDays] = useState<DashboardDay[]>([])
   const [loading, setLoading] = useState(true)
@@ -241,9 +244,9 @@ export function Home() {
         ) : days.length === 0 ? (
           <div className={styles.emptyState}>
             <div className={styles.emptyIcon}>🗑️</div>
-            <p className={styles.emptyTitle}>Nenhuma agenda de coleta cadastrada</p>
-            <p className={styles.emptyText}>Configure os tipos de lixo coletados no seu endereço para ver o calendário.</p>
-            <Link to="/settings" className={styles.emptyBtn}>Configurar agenda</Link>
+            <p className={styles.emptyTitle}>{t('home.emptyTitle')}</p>
+            <p className={styles.emptyText}>{t('home.emptyText')}</p>
+            <Link to="/settings" className={styles.emptyBtn}>{t('home.emptyBtn')}</Link>
           </div>
         ) : (
           <div className={styles.grid}>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { api } from '../../services/api'
 import styles from './SignIn.module.css'
@@ -21,11 +22,13 @@ function EyeIcon({ open }: { open: boolean }) {
 
 export function SignIn() {
   const { login } = useAuth()
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -36,10 +39,10 @@ export function SignIn() {
 
     try {
       const { accessToken } = await api.signIn(email, password)
-      await login(accessToken)
+      await login(accessToken, rememberMe)
       navigate('/home')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Algo deu errado')
+      setError(err instanceof Error ? err.message : t('signIn.error'))
     } finally {
       setLoading(false)
     }
@@ -48,28 +51,28 @@ export function SignIn() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <h1 className={styles.title}>Bem-vindo de volta</h1>
-        <p className={styles.subtitle}>Entre na sua conta</p>
+        <h1 className={styles.title}>{t('signIn.title')}</h1>
+        <p className={styles.subtitle}>{t('signIn.subtitle')}</p>
 
         <form className={styles.form} onSubmit={handleSubmit}>
           {error && <p className={styles.error}>{error}</p>}
 
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="email">E-mail</label>
+            <label className={styles.label} htmlFor="email">{t('signIn.email')}</label>
             <input
               id="email"
               className={styles.input}
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="voce@exemplo.com"
+              placeholder={t('signIn.emailPlaceholder')}
               required
               autoComplete="email"
             />
           </div>
 
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="password">Senha</label>
+            <label className={styles.label} htmlFor="password">{t('signIn.password')}</label>
             <div className={styles.passwordWrapper}>
               <input
                 id="password"
@@ -85,21 +88,31 @@ export function SignIn() {
                 type="button"
                 className={styles.eyeBtn}
                 onClick={() => setShowPassword(v => !v)}
-                aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                aria-label={showPassword ? t('signIn.hidePassword') : t('signIn.showPassword')}
               >
                 <EyeIcon open={showPassword} />
               </button>
             </div>
           </div>
 
+          <label className={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              className={styles.checkbox}
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />
+            {t('signIn.rememberMe')}
+          </label>
+
           <button className={styles.button} type="submit" disabled={loading}>
-            {loading ? 'Entrando…' : 'Entrar'}
+            {loading ? t('signIn.signingIn') : t('signIn.signIn')}
           </button>
         </form>
 
         <p className={styles.footer}>
-          Não tem uma conta?{' '}
-          <Link to="/signup" className={styles.link}>Cadastre-se</Link>
+          {t('signIn.noAccount')}{' '}
+          <Link to="/signup" className={styles.link}>{t('signIn.signUp')}</Link>
         </p>
       </div>
     </div>
