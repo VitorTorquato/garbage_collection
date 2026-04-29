@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=DM+Mono:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500&display=swap');
 
 :root {
   /* ── Brand palette ─────────────────────────── */
@@ -37,12 +37,12 @@
   --shimmer-highlight: oklch(97% 0.006 163);
 
   /* ── Typography ────────────────────────────── */
-  --sans:    'DM Mono', ui-monospace, Consolas, monospace;
-  --heading: 'Cormorant Garamond', Georgia, serif;
-  --mono:    'DM Mono', ui-monospace, Consolas, monospace;
+  --sans:    'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --heading: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --mono:    'Geist Mono', ui-monospace, Consolas, monospace;
 
   font: 14px/160% var(--sans);
-  letter-spacing: 0.02em;
+  letter-spacing: -0.01em;
   color-scheme: light;
   color: var(--text);
   background: var(--bg-subtle);
@@ -74,14 +74,14 @@ h1, h2 {
 h1 {
   font-size: 28px;
   font-weight: 600;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.5px;
   margin: 0 0 4px;
 }
 
 h2 {
   font-size: 20px;
   font-weight: 600;
-  letter-spacing: -0.2px;
+  letter-spacing: -0.3px;
   margin: 0 0 8px;
 }
 
