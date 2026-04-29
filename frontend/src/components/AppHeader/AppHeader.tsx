@@ -9,7 +9,6 @@ export function AppHeader() {
       <Link to="/home" className={styles.logoWrap}>
         <span className={styles.logoText}>Waste Day</span>
       </Link>
-
       <AvatarPopover />
     </header>
   )
