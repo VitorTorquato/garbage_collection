@@ -1,20 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=DM+Mono:wght@300;400;500&display=swap');
+
 :root {
   /* ── Brand palette ─────────────────────────── */
-  --emerald:        oklch(59.6% 0.145 163.225);
-  --emerald-hover:  oklch(52%   0.145 163.225);
-  --emerald-light:  oklch(96.5% 0.025 163.225);
-  --emerald-border: oklch(84%   0.07  163.225);
+  --emerald:        oklch(50% 0.145 163.225);
+  --emerald-hover:  oklch(44% 0.145 163.225);
+  --emerald-light:  oklch(95.5% 0.028 163.225);
+  --emerald-border: oklch(78%   0.08  163.225);
 
-  --blue:           oklch(70.7% 0.165 254.624);
-  --blue-light:     oklch(96.5% 0.025 254.624);
-  --blue-border:    oklch(84%   0.07  254.624);
+  --blue:           oklch(55% 0.165 254.624);
+  --blue-light:     oklch(95.5% 0.02 254.624);
+  --blue-border:    oklch(78%   0.07 254.624);
 
   /* ── Semantic tokens ───────────────────────── */
   --bg:             #ffffff;
-  --bg-subtle:      oklch(98.5% 0.005 163.225);
-  --text-h:         oklch(13%   0.01  163.225);
-  --text:           oklch(48%   0.01  163.225);
-  --border:         oklch(91%   0.008 163.225);
+  --bg-subtle:      oklch(97% 0.012 163);
+  --input-bg:       #ffffff;
+  --text-h:         oklch(13% 0.02 163);
+  --text:           oklch(44% 0.05 163);
+  --border:         oklch(87% 0.025 163.225);
   --code-bg:        var(--bg-subtle);
 
   --accent:         var(--emerald);
@@ -25,20 +28,24 @@
   /* ── Shadows ───────────────────────────────── */
   --shadow-sm:  0 1px 2px rgb(0 0 0 / 0.06);
   --shadow:     0 1px 3px rgb(0 0 0 / 0.07),
-                0 4px 16px rgb(0 0 0 / 0.06);
+                0 4px 16px rgb(0 0 0 / 0.05);
   --shadow-lg:  0 4px 24px rgb(0 0 0 / 0.09),
                 0 12px 40px rgb(0 0 0 / 0.07);
 
-  /* ── Typography ────────────────────────────── */
-  --sans:    system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono:    ui-monospace, Consolas, monospace;
+  /* ── Skeleton shimmer ──────────────────────── */
+  --shimmer-base:      oklch(92% 0.01 163);
+  --shimmer-highlight: oklch(97% 0.006 163);
 
-  font: 16px/150% var(--sans);
-  letter-spacing: 0.1px;
+  /* ── Typography ────────────────────────────── */
+  --sans:    'DM Mono', ui-monospace, Consolas, monospace;
+  --heading: 'Cormorant Garamond', Georgia, serif;
+  --mono:    'DM Mono', ui-monospace, Consolas, monospace;
+
+  font: 14px/160% var(--sans);
+  letter-spacing: 0.02em;
   color-scheme: light;
   color: var(--text);
-  background: var(--bg);
+  background: var(--bg-subtle);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -66,8 +73,8 @@ h1, h2 {
 
 h1 {
   font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
   margin: 0 0 4px;
 }
 
@@ -96,7 +103,7 @@ h2 {
 .spinner {
   width: 22px;
   height: 22px;
-  border: 2.5px solid var(--border);
+  border: 2px solid var(--border);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.65s linear infinite;

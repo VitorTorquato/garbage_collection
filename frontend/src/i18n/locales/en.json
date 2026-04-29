@@ -92,7 +92,25 @@
   },
   "avatar": {
     "openMenu": "Open account menu",
-    "collectionSettings": "Collection settings",
+    "collectionSettings": "Settings",
     "signOut": "Sign out"
+  },
+  "language": {
+    "title": "Language",
+    "subtitle": "Interface language"
+  },
+  "landing": {
+    "eyebrow": "Waste management, simplified",
+    "headlineLine1": "Never miss",
+    "headlineArticle": "a ",
+    "headlineItalic": "collection",
+    "headlineLine3": "again.",
+    "tagline": "Track your garbage collection schedule by address. Get reminders for organic, mixed, recyclable, and glass waste — all in one place.",
+    "getStarted": "Get started",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "dashboard": "Dashboard",
+    "goToDashboard": "Go to dashboard",
+    "footer": "Built to keep your street clean."
   }
 }

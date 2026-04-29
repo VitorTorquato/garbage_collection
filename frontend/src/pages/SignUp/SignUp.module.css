@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
+  background: var(--bg-subtle);
 }
 
 .card {
@@ -14,21 +15,31 @@
   border-radius: 12px;
   padding: 40px 36px;
   box-shadow: var(--shadow);
+  animation: fadeUp 0.5s ease forwards;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .title {
-  font-size: 24px;
+  font-family: var(--heading);
+  font-size: 32px;
   font-weight: 600;
   color: var(--text-h);
   margin: 0 0 4px;
-  text-align: left;
+  letter-spacing: -0.3px;
+  line-height: 1.1;
 }
 
 .subtitle {
-  font-size: 14px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
   color: var(--text);
-  margin: 0 0 28px;
-  text-align: left;
+  margin: 0 0 32px;
 }
 
 .form {
@@ -41,31 +52,40 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  text-align: left;
 }
 
 .label {
-  font-size: 13px;
+  font-family: var(--sans);
+  font-size: 11px;
   font-weight: 500;
-  color: var(--text-h);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
 }
 
 .input {
-  padding: 10px 12px;
+  padding: 10px 13px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--bg);
+  background: var(--input-bg);
   color: var(--text-h);
-  font-size: 15px;
+  font-size: 13px;
   font-family: var(--sans);
+  letter-spacing: 0.03em;
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
   width: 100%;
   box-sizing: border-box;
 }
 
+.input::placeholder {
+  color: var(--text);
+  opacity: 0.5;
+}
+
 .input:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px oklch(59.6% 0.145 163.225 / 0.12);
 }
 
 .passwordWrapper {
@@ -97,39 +117,48 @@
 }
 
 .error {
-  font-size: 13px;
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.08);
-  border-radius: 6px;
-  padding: 8px 10px;
+  font-family: var(--sans);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: oklch(45% 0.18 25);
+  background: oklch(97% 0.03 25);
+  border: 1px solid oklch(82% 0.08 25);
+  border-radius: 7px;
+  padding: 9px 12px;
 }
 
 .button {
   margin-top: 4px;
   padding: 11px;
   background: var(--accent);
-  color: #fff;
+  color: #ffffff;
   border: none;
   border-radius: 8px;
-  font-size: 15px;
-  font-weight: 500;
   font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
 }
 
 .button:hover:not(:disabled) {
-  opacity: 0.88;
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px oklch(59.6% 0.145 163.225 / 0.25);
 }
 
 .button:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .footer {
-  margin-top: 20px;
-  font-size: 14px;
+  margin-top: 22px;
+  font-family: var(--sans);
+  font-size: 12px;
+  letter-spacing: 0.03em;
   color: var(--text);
   text-align: center;
 }
@@ -138,13 +167,16 @@
   color: var(--accent);
   text-decoration: none;
   font-weight: 500;
+  transition: color 0.12s;
 }
 
 .link:hover {
+  color: var(--accent-hover);
   text-decoration: underline;
 }
 
 .optional {
-  font-weight: 400;
+  font-weight: 300;
   color: var(--text);
+  opacity: 0.7;
 }

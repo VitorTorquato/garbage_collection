@@ -1,0 +1,437 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=DM+Mono:wght@300;400;500&display=swap');
+
+/* ── Root ─────────────────────────────────────────────────────────────── */
+
+.page {
+  min-height: 100svh;
+  background: oklch(97% 0.012 163);
+  color: oklch(13% 0.02 163);
+  font-family: 'DM Mono', monospace;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Background noise grain ───────────────────────────────────────────── */
+
+.page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 180px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+/* ── Ambient glow ─────────────────────────────────────────────────────── */
+
+.glow {
+  position: absolute;
+  width: 640px;
+  height: 640px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, oklch(78% 0.1 163) 0%, transparent 68%);
+  opacity: 0.22;
+  top: -160px;
+  right: -120px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Nav ──────────────────────────────────────────────────────────────── */
+
+.nav {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 48px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.logoText {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: oklch(50% 0.145 163.225);
+}
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.langSwitcher {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-right: 6px;
+}
+
+.langBtn {
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: oklch(44% 0.05 163);
+  padding: 5px 8px;
+  border-radius: 5px;
+  opacity: 0.6;
+  transition: opacity 0.15s, color 0.15s, border-color 0.15s;
+  line-height: 1;
+}
+
+.langBtn:hover {
+  opacity: 1;
+}
+
+.langBtnActive {
+  opacity: 1;
+  color: oklch(50% 0.145 163.225);
+  border-color: oklch(78% 0.08 163.225);
+}
+
+.btnOutline {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: oklch(30% 0.04 163);
+  background: transparent;
+  border: 1px solid oklch(68% 0.07 163);
+  border-radius: 6px;
+  padding: 9px 20px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.btnOutline:hover {
+  color: oklch(13% 0.02 163);
+  border-color: oklch(50% 0.1 163);
+  background: oklch(93% 0.025 163 / 0.6);
+}
+
+.btnFilled {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: oklch(50% 0.145 163.225);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 9px 20px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+}
+
+.btnFilled:hover {
+  background: oklch(44% 0.145 163.225);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px oklch(50% 0.145 163.225 / 0.25);
+}
+
+/* ── Hero ─────────────────────────────────────────────────────────────── */
+
+.hero {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 48px 80px;
+  text-align: center;
+}
+
+/* ── Orbital rings ────────────────────────────────────────────────────── */
+
+.orbitWrapper {
+  position: absolute;
+  width: 560px;
+  height: 560px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -54%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.orbit {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid transparent;
+}
+
+.orbit1 {
+  border-color: oklch(52% 0.12 163 / 0.22);
+  animation: spin1 28s linear infinite;
+}
+
+.orbit2 {
+  inset: 40px;
+  border-color: oklch(55% 0.14 254 / 0.18);
+  animation: spin1 20s linear infinite reverse;
+}
+
+.orbit3 {
+  inset: 90px;
+  border-color: oklch(62% 0.18 85 / 0.16);
+  animation: spin1 35s linear infinite;
+}
+
+.orbit4 {
+  inset: 140px;
+  border-color: oklch(58% 0.14 200 / 0.2);
+  animation: spin1 16s linear infinite reverse;
+}
+
+@keyframes spin1 {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.dot {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  top: -3.5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.orbit1 .dot { background: oklch(50% 0.145 163.225); box-shadow: 0 0 10px oklch(50% 0.145 163.225 / 0.6); }
+.orbit2 .dot { background: oklch(55% 0.165 254.624); box-shadow: 0 0 10px oklch(55% 0.165 254.624 / 0.6); }
+.orbit3 .dot { background: oklch(62% 0.18 85);       box-shadow: 0 0 10px oklch(62% 0.18 85 / 0.6); }
+.orbit4 .dot { background: oklch(58% 0.14 200);      box-shadow: 0 0 10px oklch(58% 0.14 200 / 0.6); }
+
+/* ── Headline content ─────────────────────────────────────────────────── */
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: oklch(50% 0.145 163.225);
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeUp 0.7s ease forwards;
+  animation-delay: 0.1s;
+}
+
+.headline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(64px, 8.5vw, 120px);
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: oklch(13% 0.02 163);
+  margin: 0;
+  opacity: 0;
+  animation: fadeUp 0.8s ease forwards;
+  animation-delay: 0.25s;
+}
+
+.headline em {
+  font-style: italic;
+  color: oklch(50% 0.145 163.225);
+}
+
+.tagline {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: oklch(44% 0.05 163);
+  max-width: 420px;
+  margin-top: 32px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease forwards;
+  animation-delay: 0.45s;
+}
+
+.ctaRow {
+  display: flex;
+  gap: 12px;
+  margin-top: 40px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease forwards;
+  animation-delay: 0.6s;
+}
+
+.ctaPrimary {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: oklch(50% 0.145 163.225);
+  border: none;
+  border-radius: 6px;
+  padding: 13px 28px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.ctaPrimary:hover {
+  background: oklch(44% 0.145 163.225);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px oklch(50% 0.145 163.225 / 0.28);
+}
+
+.ctaSecondary {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: oklch(44% 0.05 163);
+  background: transparent;
+  border: 1px solid oklch(72% 0.07 163);
+  border-radius: 6px;
+  padding: 13px 28px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.ctaSecondary:hover {
+  color: oklch(13% 0.02 163);
+  border-color: oklch(55% 0.1 163);
+  background: oklch(93% 0.025 163 / 0.5);
+}
+
+/* ── Waste type pills ─────────────────────────────────────────────────── */
+
+.pillRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 56px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease forwards;
+  animation-delay: 0.75s;
+}
+
+.pill {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 100px;
+  border: 1px solid;
+}
+
+.pillOrganic   { color: oklch(42% 0.145 163.225); border-color: oklch(42% 0.145 163.225 / 0.4); background: oklch(42% 0.145 163.225 / 0.08); }
+.pillMixed     { color: oklch(52% 0.18 85);        border-color: oklch(52% 0.18 85 / 0.4);        background: oklch(52% 0.18 85 / 0.08); }
+.pillRecyclable{ color: oklch(48% 0.165 254.624);  border-color: oklch(48% 0.165 254.624 / 0.4);  background: oklch(48% 0.165 254.624 / 0.08); }
+.pillGlass     { color: oklch(48% 0.14 200);       border-color: oklch(48% 0.14 200 / 0.4);        background: oklch(48% 0.14 200 / 0.08); }
+
+/* ── Bottom line ──────────────────────────────────────────────────────── */
+
+.footer {
+  position: relative;
+  z-index: 1;
+  padding: 20px 48px;
+  display: flex;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeIn 1s ease forwards;
+  animation-delay: 1s;
+}
+
+.footerLine {
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: oklch(56% 0.06 163);
+}
+
+/* ── Animations ───────────────────────────────────────────────────────── */
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .nav {
+    padding: 20px 24px;
+  }
+
+  .hero {
+    padding: 24px 24px 60px;
+  }
+
+  .orbitWrapper {
+    width: 340px;
+    height: 340px;
+  }
+
+  .orbit2 { inset: 28px; }
+  .orbit3 { inset: 58px; }
+  .orbit4 { inset: 90px; }
+
+  .pillRow {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .ctaRow {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .footer {
+    padding: 16px 24px;
+  }
+
+  .navActions .btnOutline {
+    display: none;
+  }
+}

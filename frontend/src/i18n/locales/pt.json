@@ -92,7 +92,25 @@
   },
   "avatar": {
     "openMenu": "Abrir menu da conta",
-    "collectionSettings": "Configurações de coleta",
+    "collectionSettings": "Configurações",
     "signOut": "Sair"
+  },
+  "language": {
+    "title": "Idioma",
+    "subtitle": "Idioma da interface"
+  },
+  "landing": {
+    "eyebrow": "Gestão de resíduos, simplificada",
+    "headlineLine1": "Nunca perca",
+    "headlineArticle": "uma ",
+    "headlineItalic": "coleta",
+    "headlineLine3": "de lixo.",
+    "tagline": "Acompanhe sua agenda de coleta de lixo por endereço. Receba lembretes para resíduos orgânicos, misturados, recicláveis e vidro — tudo em um só lugar.",
+    "getStarted": "Começar",
+    "signIn": "Entrar",
+    "signUp": "Cadastrar",
+    "dashboard": "Painel",
+    "goToDashboard": "Ir ao painel",
+    "footer": "Feito para manter sua rua limpa."
   }
 }

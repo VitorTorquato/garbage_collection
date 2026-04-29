@@ -92,7 +92,25 @@
   },
   "avatar": {
     "openMenu": "Abrir menú de cuenta",
-    "collectionSettings": "Configuración de recolección",
+    "collectionSettings": "Configuración",
     "signOut": "Cerrar sesión"
+  },
+  "language": {
+    "title": "Idioma",
+    "subtitle": "Idioma de la interfaz"
+  },
+  "landing": {
+    "eyebrow": "Gestión de residuos, simplificada",
+    "headlineLine1": "No pierdas",
+    "headlineArticle": "ninguna ",
+    "headlineItalic": "recolección",
+    "headlineLine3": "más.",
+    "tagline": "Haz seguimiento de tu agenda de recolección por dirección. Recibe recordatorios para residuos orgánicos, mixtos, reciclables y vidrio — todo en un solo lugar.",
+    "getStarted": "Empezar",
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "dashboard": "Panel",
+    "goToDashboard": "Ir al panel",
+    "footer": "Diseñado para mantener tu calle limpia."
   }
 }

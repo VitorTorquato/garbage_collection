@@ -2,6 +2,12 @@ import { useState, useEffect, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
+
+const LANGUAGES = [
+  { code: 'en', label: 'EN — English' },
+  { code: 'pt', label: 'PT — Português' },
+  { code: 'es', label: 'ES — Español' },
+]
 import { AppHeader } from '../../components/AppHeader/AppHeader'
 import { useAuth } from '../../context/AuthContext'
 import { api } from '../../services/api'
@@ -279,7 +285,7 @@ function SettingsSkeleton() {
 
 export function CollectionSettings() {
   const { token } = useAuth()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
 
   const addressSchema = useMemo(() => z.object({
@@ -443,6 +449,28 @@ export function CollectionSettings() {
               onTimeChange={setNotifTime}
               onPhoneChange={setNotifPhone}
             />
+            <div className={styles.card}>
+              <div className={styles.cardHeader}>
+                <div>
+                  <p className={styles.cardTitle}>{t('language.title')}</p>
+                  <p className={styles.cardSubtitle}>{t('language.subtitle')}</p>
+                </div>
+              </div>
+              <div className={styles.cardBody}>
+                <div className={styles.langGrid}>
+                  {LANGUAGES.map(({ code, label }) => (
+                    <button
+                      key={code}
+                      className={`${styles.langPickBtn} ${i18n.language === code ? styles.langPickBtnActive : ''}`}
+                      onClick={() => { i18n.changeLanguage(code); localStorage.setItem('lang', code) }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             {success && <p className={styles.success}>{success}</p>}
             <button className={styles.primaryBtn} onClick={handleSave} disabled={saving}>
               {saving ? t('settings.saving') : t('settings.save')}
