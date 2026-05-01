@@ -27,7 +27,7 @@ export class NotificationsService {
       process.env.TWILIO_ACCOUNT_SID,
       process.env.TWILIO_AUTH_TOKEN,
     );
-    this.fromNumber = process.env.TWILIO_WHATSAPP_FROM!;
+    this.fromNumber = process.env.TWILIO_SMS_FROM!;
   }
 
   async getPreferences(userId: number) {
@@ -58,14 +58,10 @@ export class NotificationsService {
     return { ...prefs, phoneNumber: phoneNumber ?? null };
   }
 
-  async sendWhatsApp(phoneNumber: string, message: string) {
-    const to = phoneNumber.startsWith('whatsapp:')
-      ? phoneNumber
-      : `whatsapp:${phoneNumber}`;
-
+  async sendSms(phoneNumber: string, message: string) {
     return this.twilioClient.messages.create({
       from: this.fromNumber,
-      to,
+      to: phoneNumber,
       body: message,
     });
   }
@@ -118,7 +114,7 @@ export class NotificationsService {
 
     const message = `Hi ${user.name}! Today is ${typeNames} collection day. Don't forget to put your waste out!`;
 
-    const sendResult = await this.sendWhatsApp(user.phoneNumber, message);
+    const sendResult = await this.sendSms(user.phoneNumber, message);
     this.logger.log(`Twilio message queued for user ${userId}: sid=${sendResult.sid}`);
   }
 }
