@@ -44,7 +44,7 @@
     "namePlaceholder": "Tu nombre",
     "email": "E-mail",
     "emailPlaceholder": "tu@ejemplo.com",
-    "whatsapp": "WhatsApp",
+    "whatsapp": "Número de teléfono",
     "optional": "(opcional)",
     "password": "Contraseña",
     "passwordPlaceholder": "Mín. 6 caracteres",
@@ -76,9 +76,9 @@
       "calendarAlt": "Calendario nacional de recolección de residuos domésticos de Malta"
     },
     "notifications": {
-      "title": "Notificaciones WhatsApp",
-      "subtitle": "Recibe un mensaje de WhatsApp los días de recolección configurados",
-      "phone": "Teléfono WhatsApp",
+      "title": "Notificaciones por SMS",
+      "subtitle": "Recibe un SMS los días de recolección configurados",
+      "phone": "Número de teléfono",
       "enable": "Activar notificaciones",
       "time": "Hora del recordatorio",
       "invalidTime": "Hora inválida",

@@ -44,7 +44,7 @@
     "namePlaceholder": "Your name",
     "email": "E-mail",
     "emailPlaceholder": "you@example.com",
-    "whatsapp": "WhatsApp",
+    "whatsapp": "Phone number",
     "optional": "(optional)",
     "password": "Password",
     "passwordPlaceholder": "Min. 6 characters",
@@ -76,9 +76,9 @@
       "calendarAlt": "Malta national household waste collection calendar"
     },
     "notifications": {
-      "title": "WhatsApp Notifications",
-      "subtitle": "Receive a WhatsApp message on collection days",
-      "phone": "WhatsApp Phone",
+      "title": "SMS Notifications",
+      "subtitle": "Receive an SMS on collection days",
+      "phone": "Phone number",
       "enable": "Enable notifications",
       "time": "Reminder time",
       "invalidTime": "Invalid time",
