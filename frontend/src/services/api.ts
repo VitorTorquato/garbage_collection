@@ -64,12 +64,14 @@ export interface NotificationPreference {
   id: number
   enabled: boolean
   notificationTime: string
+  notifyDayBefore: boolean
   phoneNumber: string | null
 }
 
 export interface UpsertNotificationPrefsDto {
   enabled: boolean
   notificationTime: string
+  notifyDayBefore: boolean
   phoneNumber?: string
 }
 
