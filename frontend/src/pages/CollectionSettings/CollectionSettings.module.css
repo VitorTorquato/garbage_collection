@@ -456,6 +456,37 @@
   box-shadow: 0 0 0 3px oklch(59.6% 0.145 163.225 / 0.12);
 }
 
+/* ── Segmented buttons ────────────────────── */
+
+.segmentedGroup {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.segmentBtn {
+  flex: 1;
+  padding: 8px 12px;
+  background: var(--input-bg);
+  color: var(--text-p);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.segmentBtn + .segmentBtn {
+  border-left: 1px solid var(--border);
+}
+
+.segmentBtnActive {
+  background: var(--accent);
+  color: #fff;
+}
+
 /* ── Ghost button ─────────────────────────── */
 
 .ghostBtn {

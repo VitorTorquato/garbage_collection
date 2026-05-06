@@ -3,11 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
 
-const LANGUAGES = [
-  { code: 'en', label: 'EN — English' },
-  { code: 'pt', label: 'PT — Português' },
-  { code: 'es', label: 'ES — Español' },
-]
+
 import { AppHeader } from '../../components/AppHeader/AppHeader'
 import { useAuth } from '../../context/AuthContext'
 import { api } from '../../services/api'
@@ -168,14 +164,16 @@ function SchedulesSection({ selected, onToggle }: SchedulesSectionProps) {
 interface NotificationsSectionProps {
   enabled: boolean
   notificationTime: string
+  notifyDayBefore: boolean
   phoneNumber: string
   error: string
   onEnabledChange: (v: boolean) => void
   onTimeChange: (v: string) => void
+  onDayBeforeChange: (v: boolean) => void
   onPhoneChange: (v: string) => void
 }
 
-function NotificationsSection({ enabled, notificationTime, phoneNumber, error, onEnabledChange, onTimeChange, onPhoneChange }: NotificationsSectionProps) {
+function NotificationsSection({ enabled, notificationTime, notifyDayBefore, phoneNumber, error, onEnabledChange, onTimeChange, onDayBeforeChange, onPhoneChange }: NotificationsSectionProps) {
   const { t } = useTranslation()
   return (
     <div className={styles.card}>
@@ -206,6 +204,28 @@ function NotificationsSection({ enabled, notificationTime, phoneNumber, error, o
             <span className={styles.toggleSlider} />
           </label>
         </div>
+
+        {enabled && (
+          <div className={styles.field}>
+            <label className={styles.label}>{t('settings.notifications.when')}</label>
+            <div className={styles.segmentedGroup}>
+              <button
+                type="button"
+                className={`${styles.segmentBtn} ${!notifyDayBefore ? styles.segmentBtnActive : ''}`}
+                onClick={() => onDayBeforeChange(false)}
+              >
+                {t('settings.notifications.dayOf')}
+              </button>
+              <button
+                type="button"
+                className={`${styles.segmentBtn} ${notifyDayBefore ? styles.segmentBtnActive : ''}`}
+                onClick={() => onDayBeforeChange(true)}
+              >
+                {t('settings.notifications.dayBefore')}
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className={styles.field}>
           <label className={styles.label}>{t('settings.notifications.time')}</label>
@@ -285,7 +305,7 @@ function SettingsSkeleton() {
 
 export function CollectionSettings() {
   const { token } = useAuth()
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   const addressSchema = useMemo(() => z.object({
@@ -296,6 +316,7 @@ export function CollectionSettings() {
   const notificationSchema = useMemo(() => z.object({
     enabled: z.boolean(),
     notificationTime: z.string().regex(/^\d{2}:\d{2}$/, t('settings.notifications.invalidTime')),
+    notifyDayBefore: z.boolean(),
     phoneNumber: z.string().regex(/^\+?[1-9]\d{7,14}$/, t('settings.notifications.invalidPhone')).optional().or(z.literal('')),
   }), [t])
 
@@ -313,6 +334,7 @@ export function CollectionSettings() {
   // Notifications
   const [notifEnabled, setNotifEnabled] = useState(false)
   const [notifTime, setNotifTime] = useState('08:00')
+  const [notifDayBefore, setNotifDayBefore] = useState(false)
   const [notifPhone, setNotifPhone] = useState('')
   const [notifError, setNotifError] = useState('')
 
@@ -343,6 +365,7 @@ export function CollectionSettings() {
       if (prefs) {
         setNotifEnabled(prefs.enabled)
         setNotifTime(prefs.notificationTime)
+        setNotifDayBefore(prefs.notifyDayBefore ?? false)
         if (prefs.phoneNumber) setNotifPhone(prefs.phoneNumber)
       }
     }).finally(() => setLoading(false))
@@ -369,7 +392,7 @@ export function CollectionSettings() {
       return
     }
 
-    const notifResult = notificationSchema.safeParse({ enabled: notifEnabled, notificationTime: notifTime, phoneNumber: notifPhone || undefined })
+    const notifResult = notificationSchema.safeParse({ enabled: notifEnabled, notificationTime: notifTime, notifyDayBefore: notifDayBefore, phoneNumber: notifPhone || undefined })
     if (!notifResult.success) {
       const errs = notifResult.error.flatten().fieldErrors
       setNotifError(errs.notificationTime?.[0] ?? errs.phoneNumber?.[0] ?? t('settings.notifications.invalidData'))
@@ -398,6 +421,7 @@ export function CollectionSettings() {
       await api.upsertNotificationPrefs({
         enabled: notifResult.data.enabled,
         notificationTime: notifResult.data.notificationTime,
+        notifyDayBefore: notifResult.data.notifyDayBefore,
         ...(notifResult.data.phoneNumber ? { phoneNumber: notifResult.data.phoneNumber } : {}),
       }, token)
 
@@ -443,34 +467,14 @@ export function CollectionSettings() {
             <NotificationsSection
               enabled={notifEnabled}
               notificationTime={notifTime}
+              notifyDayBefore={notifDayBefore}
               phoneNumber={notifPhone}
               error={notifError}
               onEnabledChange={setNotifEnabled}
               onTimeChange={setNotifTime}
+              onDayBeforeChange={setNotifDayBefore}
               onPhoneChange={setNotifPhone}
             />
-            <div className={styles.card}>
-              <div className={styles.cardHeader}>
-                <div>
-                  <p className={styles.cardTitle}>{t('language.title')}</p>
-                  <p className={styles.cardSubtitle}>{t('language.subtitle')}</p>
-                </div>
-              </div>
-              <div className={styles.cardBody}>
-                <div className={styles.langGrid}>
-                  {LANGUAGES.map(({ code, label }) => (
-                    <button
-                      key={code}
-                      className={`${styles.langPickBtn} ${i18n.language === code ? styles.langPickBtnActive : ''}`}
-                      onClick={() => { i18n.changeLanguage(code); localStorage.setItem('lang', code) }}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
             {success && <p className={styles.success}>{success}</p>}
             <button className={styles.primaryBtn} onClick={handleSave} disabled={saving}>
               {saving ? t('settings.saving') : t('settings.save')}

@@ -36,7 +36,7 @@ export class NotificationsService {
       this.prisma.user.findUnique({ where: { id: userId }, select: { phoneNumber: true } }),
     ]);
     return {
-      ...(prefs ?? { enabled: false, notificationTime: '08:00' }),
+      ...(prefs ?? { enabled: false, notificationTime: '08:00', notifyDayBefore: false }),
       phoneNumber: user?.phoneNumber ?? null,
     };
   }
@@ -67,12 +67,15 @@ export class NotificationsService {
   }
 
   async buildAndSendNotification(userId: number) {
-    const user = await this.prisma.withRetry(() =>
-      this.prisma.user.findUnique({
-        where: { id: userId },
-        include: { collectionSchedules: true },
-      }),
-    );
+    const [user, prefs] = await Promise.all([
+      this.prisma.withRetry(() =>
+        this.prisma.user.findUnique({
+          where: { id: userId },
+          include: { collectionSchedules: true },
+        }),
+      ),
+      this.prisma.notificationPreference.findUnique({ where: { userId } }),
+    ]);
 
     if (!user?.phoneNumber) {
       this.logger.log(`Skipping user ${userId}: missing phone number`);
@@ -83,6 +86,7 @@ export class NotificationsService {
       return;
     }
 
+    const notifyDayBefore = prefs?.notifyDayBefore ?? false;
     const trashTypes = user.collectionSchedules.map((s) => s.trashType as string);
     const now = new Date();
     const dateFormatter = new Intl.DateTimeFormat('en-GB', {
@@ -96,25 +100,29 @@ export class NotificationsService {
     const month = dateParts.find((p) => p.type === 'month')?.value ?? '01';
     const day = dateParts.find((p) => p.type === 'day')?.value ?? '01';
     const today = new Date(`${year}-${month}-${day}T00:00:00`);
-    const todayStr = localDateString(today);
 
-    const todayEntry = getUpcomingDays(trashTypes, today, 1).find(
-      (d) => d.date === todayStr,
+    const targetDate = new Date(today);
+    if (notifyDayBefore) targetDate.setDate(targetDate.getDate() + 1);
+    const targetDateStr = localDateString(targetDate);
+
+    const targetEntry = getUpcomingDays(trashTypes, today, 2).find(
+      (d) => d.date === targetDateStr,
     );
 
-    if (!todayEntry) {
+    if (!targetEntry) {
       this.logger.log(
-        `Skipping user ${userId}: no collection today (${todayStr}) for configured trash types`,
+        `Skipping user ${userId}: no collection on ${targetDateStr} for configured trash types`,
       );
       return;
     }
 
-    const typeNames = todayEntry.trashTypes
+    const typeNames = targetEntry.trashTypes
       .map((t) => TRASH_LABELS[t] ?? t)
       .join(' and ');
 
-
-    const message = `Hi ${user.name}! Today is ${typeNames} collection day. Don't forget to put your waste out!`;
+    const message = notifyDayBefore
+      ? `Hi ${user.name}! Tomorrow is ${typeNames} collection day. Don't forget to prepare your waste!`
+      : `Hi ${user.name}! Today is ${typeNames} collection day. Don't forget to put your waste out!`;
 
     const sendResult = await this.sendSms(user.phoneNumber, message);
     this.logger.log(`Twilio message queued for user ${userId}: sid=${sendResult.sid}`);
