@@ -11,8 +11,12 @@ function isConnectionError(err: unknown): boolean {
   const code = (err as { code?: string }).code;
   if (code && CONNECTION_ERROR_CODES.has(code)) return true;
   // DriverAdapterError thrown by @prisma/adapter-pg on stale pg connections
-  return err.message.includes('Control plane request failed') ||
-    err.constructor.name === 'PrismaClientInitializationError';
+  return (
+    err.message.includes('Control plane request failed') ||
+    err.message.includes('Connection terminated due to connection timeout') ||
+    err.message.includes('Connection terminated unexpectedly') ||
+    err.constructor.name === 'PrismaClientInitializationError'
+  );
 }
 
 @Injectable()

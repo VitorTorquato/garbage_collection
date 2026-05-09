@@ -1,0 +1,209 @@
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--input-bg);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.wrapper:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px oklch(59.6% 0.145 163.225 / 0.12);
+}
+
+/* ── Country trigger ──────────────────────── */
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  height: 100%;
+  min-height: 39px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: var(--text-h);
+}
+
+.trigger:focus {
+  outline: none;
+}
+
+.flag {
+  width: 20px;
+  height: 15px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.dialCode {
+  font-family: var(--sans);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--text-h);
+  white-space: nowrap;
+}
+
+.chevron {
+  color: var(--text);
+  opacity: 0.5;
+  transition: transform 0.15s;
+  flex-shrink: 0;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+/* ── Divider ──────────────────────────────── */
+
+.divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--border);
+  flex-shrink: 0;
+  margin: 6px 0;
+}
+
+/* ── Number input ─────────────────────────── */
+
+.numberInput {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 13px;
+  background: transparent;
+  border: none;
+  color: var(--text-h);
+  font-family: var(--sans);
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  outline: none;
+}
+
+.numberInput::placeholder {
+  color: var(--text);
+  opacity: 0.5;
+}
+
+/* ── Dropdown ─────────────────────────────── */
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 200;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+  width: 280px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.searchWrapper {
+  padding: 8px 8px 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.searchInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--input-bg);
+  color: var(--text-h);
+  font-family: var(--sans);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: var(--accent);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.list::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+/* ── Option ───────────────────────────────── */
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s;
+}
+
+.option:hover {
+  background: var(--accent-bg);
+}
+
+.optionActive {
+  background: var(--accent-bg);
+}
+
+.optionName {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--sans);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--text-h);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.optionDial {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: var(--text);
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.noResults {
+  padding: 12px 10px;
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--text);
+  opacity: 0.6;
+  text-align: center;
+}

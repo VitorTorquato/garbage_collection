@@ -85,7 +85,7 @@
       "dayBefore": "Dia anterior",
       "time": "Horário do lembrete",
       "invalidTime": "Horário inválido",
-      "invalidPhone": "Telefone inválido (ex: +35699999999)",
+      "invalidPhone": "Número de telefone inválido",
       "invalidData": "Dados inválidos"
     },
     "saved": "Configurações salvas!",

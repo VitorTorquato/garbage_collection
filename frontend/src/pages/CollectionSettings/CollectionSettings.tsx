@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 
 import { AppHeader } from '../../components/AppHeader/AppHeader'
+import { PhoneInput } from '../../components/PhoneInput/PhoneInput'
 import { useAuth } from '../../context/AuthContext'
 import { api } from '../../services/api'
 import scheduleImg from '../../assets/garbage-collection.jpeg'
@@ -188,13 +189,7 @@ function NotificationsSection({ enabled, notificationTime, notifyDayBefore, phon
 
         <div className={styles.field}>
           <label className={styles.label}>{t('settings.notifications.phone')}</label>
-          <input
-            className={styles.textInput}
-            type="tel"
-            value={phoneNumber}
-            onChange={e => onPhoneChange(e.target.value)}
-            placeholder="+35699999999"
-          />
+          <PhoneInput value={phoneNumber} onChange={onPhoneChange} />
         </div>
 
         <div className={styles.toggleRow}>
