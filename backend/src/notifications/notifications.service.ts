@@ -67,15 +67,15 @@ export class NotificationsService {
   }
 
   async buildAndSendNotification(userId: number) {
-    const [user, prefs] = await Promise.all([
-      this.prisma.withRetry(() =>
+    const [user, prefs] = await this.prisma.withRetry(() =>
+      Promise.all([
         this.prisma.user.findUnique({
           where: { id: userId },
           include: { collectionSchedules: true },
         }),
-      ),
-      this.prisma.notificationPreference.findUnique({ where: { userId } }),
-    ]);
+        this.prisma.notificationPreference.findUnique({ where: { userId } }),
+      ]),
+    );
 
     if (!user?.phoneNumber) {
       this.logger.log(`Skipping user ${userId}: missing phone number`);
