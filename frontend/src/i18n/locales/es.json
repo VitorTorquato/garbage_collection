@@ -85,7 +85,7 @@
       "dayBefore": "Día anterior",
       "time": "Hora del recordatorio",
       "invalidTime": "Hora inválida",
-      "invalidPhone": "Teléfono inválido (ej: +35699999999)",
+      "invalidPhone": "Número de teléfono inválido",
       "invalidData": "Datos inválidos"
     },
     "saved": "¡Configuración guardada!",

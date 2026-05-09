@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../services/api'
+import { PhoneInput } from '../../components/PhoneInput/PhoneInput'
 import styles from './SignUp.module.css'
 
 function EyeIcon({ open }: { open: boolean }) {
@@ -87,15 +88,7 @@ export function SignUp() {
             <label className={styles.label} htmlFor="phone">
               {t('signUp.whatsapp')} <span className={styles.optional}>{t('signUp.optional')}</span>
             </label>
-            <input
-              id="phone"
-              className={styles.input}
-              type="tel"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder="+356 9999 9999"
-              autoComplete="tel"
-            />
+            <PhoneInput value={phoneNumber} onChange={setPhoneNumber} />
           </div>
 
           <div className={styles.field}>
